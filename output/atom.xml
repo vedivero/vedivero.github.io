@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title> - Articles</title>
+    <description></description>
+    <link>
+    https://vedivero.github.io/</link>
+    
+      
+      <item>
+        <title>Welcome to Ghost</title>
+        
+          <description>&lt;p&gt;Hey! Welcome to Ghost, it’s great to have you :)&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Thu, 27 Jul 2017 19:00:00 +0900</pubDate>
+        <link>
+        https://vedivero.github.io//welcome</link>
+        <guid isPermaLink="true">https://vedivero.github.io//welcome</guid>
+      </item>
+      
+    
+  </channel>
+</rss>
