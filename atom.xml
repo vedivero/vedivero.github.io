@@ -27,7 +27,7 @@
         
           <description>&lt;p&gt;&lt;span class=&quot;table-of-contents-list&quot;&gt;Java posts&lt;/span&gt;&lt;/p&gt;
 &lt;ul class=&quot;table-of-contents-list&quot;&gt;
-    &lt;li&gt;&lt;a href=&quot;./java-basic&quot;&gt;java basic&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href=&quot;./java-jvm&quot;&gt;java basic&lt;/a&gt;&lt;/li&gt;
     &lt;li&gt;&lt;a href=&quot;./java-overload&quot;&gt;overload&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
@@ -42,28 +42,20 @@
     
       
       <item>
-        <title>java</title>
+        <title>JVM (Java virtual machine)</title>
         
           <description>&lt;p&gt;&lt;span class=&quot;table-of-contents-list&quot;&gt;Java posts&lt;/span&gt;&lt;/p&gt;
 &lt;ul class=&quot;table-of-contents-list&quot;&gt;
-    &lt;li&gt;&lt;a href=&quot;./java-basic&quot;&gt;java basic&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href=&quot;./java-jvm&quot;&gt;java basic&lt;/a&gt;&lt;/li&gt;
     &lt;li&gt;&lt;a href=&quot;./java-overload&quot;&gt;overload&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;public class Test{
-    public static void main(String[] args){
-        System.out.println(&quot;Hello World&quot;);
-    }
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;test java posting test java posting
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 
 </description>
         
         <pubDate>Fri, 28 Sep 2018 01:40:00 +0900</pubDate>
         <link>
-        https://vedivero.github.io/java-basic</link>
-        <guid isPermaLink="true">https://vedivero.github.io/java-basic</guid>
+        https://vedivero.github.io/java-jvm</link>
+        <guid isPermaLink="true">https://vedivero.github.io/java-jvm</guid>
       </item>
       
     
