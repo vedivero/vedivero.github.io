@@ -2,10 +2,10 @@
 
 <feed xmlns="http://www.w3.org/2005/Atom" >
   <generator uri="https://jekyllrb.com/" version="3.7.4">Jekyll</generator>
-  <link href="https://vedivero.github.io//tag/spring/feed.xml" rel="self" type="application/atom+xml" />
-  <link href="https://vedivero.github.io//" rel="alternate" type="text/html" />
-  <updated>2021-05-13T14:50:20+09:00</updated>
-  <id>https://vedivero.github.io//tag/spring/feed.xml</id>
+  <link href="https://vedivero.github.io/tag/spring/feed.xml" rel="self" type="application/atom+xml" />
+  <link href="https://vedivero.github.io/" rel="alternate" type="text/html" />
+  <updated>2021-05-13T18:32:40+09:00</updated>
+  <id>https://vedivero.github.io/tag/spring/feed.xml</id>
 
   
   
@@ -31,11 +31,11 @@
   
     <entry>
       <title type="html">java</title>
-      <link href="https://vedivero.github.io//spring-basic" rel="alternate" type="text/html" title="java" />
+      <link href="https://vedivero.github.io/spring-basic" rel="alternate" type="text/html" title="java" />
       <published>2018-09-28T01:40:00+09:00</published>
       <updated>2018-09-28T01:40:00+09:00</updated>
-      <id>https://vedivero.github.io//spring-basic</id>
-      <content type="html" xml:base="https://vedivero.github.io//spring-basic">&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;spring framework
+      <id>https://vedivero.github.io/spring-basic</id>
+      <content type="html" xml:base="https://vedivero.github.io/spring-basic">&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;spring framework
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content>
 
       
