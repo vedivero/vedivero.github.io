@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.7.4">Jekyll</generator><link href="https://vedivero.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://vedivero.github.io/" rel="alternate" type="text/html" /><updated>2021-05-17T21:32:33+09:00</updated><id>https://vedivero.github.io/</id><title type="html">vedivero</title><entry><title type="html">JVM</title><link href="https://vedivero.github.io/java-jvm" rel="alternate" type="text/html" title="JVM" /><published>2021-05-16T04:40:00+09:00</published><updated>2021-05-16T04:40:00+09:00</updated><id>https://vedivero.github.io/java-jvm</id><content type="html" xml:base="https://vedivero.github.io/java-jvm">&lt;p&gt;&lt;span class=&quot;table-of-contents-list&quot;&gt;Java posts&lt;/span&gt;&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.7.4">Jekyll</generator><link href="https://vedivero.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://vedivero.github.io/" rel="alternate" type="text/html" /><updated>2021-05-17T22:00:57+09:00</updated><id>https://vedivero.github.io/</id><title type="html">vedivero</title><entry><title type="html">JVM</title><link href="https://vedivero.github.io/java-jvm" rel="alternate" type="text/html" title="JVM" /><published>2021-05-16T04:40:00+09:00</published><updated>2021-05-16T04:40:00+09:00</updated><id>https://vedivero.github.io/java-jvm</id><content type="html" xml:base="https://vedivero.github.io/java-jvm">&lt;p&gt;&lt;span class=&quot;table-of-contents-list&quot;&gt;Java posts&lt;/span&gt;&lt;/p&gt;
 &lt;ul class=&quot;table-of-contents-list&quot;&gt;
     &lt;li&gt;&lt;a href=&quot;./java-jvm&quot;&gt;java basic&lt;/a&gt;&lt;/li&gt;
     &lt;li&gt;&lt;a href=&quot;./java-overload&quot;&gt;overload&lt;/a&gt;&lt;/li&gt;
@@ -45,15 +45,115 @@
 &lt;h1&gt;JVM 구성&lt;/h1&gt;
 &lt;p&gt;&lt;img src=&quot;https://user-images.githubusercontent.com/75677589/118488907-2e320580-b757-11eb-89a9-3a5600a342fc.png&quot; alt=&quot;jvm&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;h5&gt;1. Class Loader&lt;/h5&gt;
 
-&lt;p&gt;C / C++ 는 ‘컴파일 플랫폼’과 ‘타겟 플랫폼’이 다를 경우, 프로그램이 동작하지 않는다.&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;클래스파일을 읽고, 링크를 통해 배치하는 작업을 수행하는 모듈&lt;/li&gt;
+  &lt;li&gt;.java 파일을 컴파일하면 .class(바이트코드)가 생성&lt;/li&gt;
+  &lt;li&gt;class파일을 Runtime data Aread 형태로 메모리에 적재하는 역할&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h5&gt;2. Execution Engine&lt;/h5&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;적재된 클래들을 기계어로 번역해 실행&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;기계어를 번역하는 2가지 방법&lt;/p&gt;
+
 &lt;blockquote&gt;
-  &lt;p&gt;문제점 : 컴파일 플랫폼과 타켓 플랫폼이 다를 경우 프로그램은 동작하지 않는다.&lt;/p&gt;
+  &lt;p&gt;1) Interpreter(인터프리터) 방식&lt;/p&gt;
 &lt;/blockquote&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;플랫폼 : 운영체제 + CPU 아키텍처 (AMD64 cpu + windows 10)&lt;/li&gt;
+  &lt;li&gt;실행 엔진은 바이트코드 단위로 읽어서 실행
+&lt;br /&gt;
+단점 : 한 줄 씩 수행하여 속도가 느림.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;2) JIT(Just In Time)&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;인터프리터의 단점을 보안한 JIT 컴파일 방식&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;어느 시점에서 바이트코드 전체를 네이티브 코드로 변경하여 작업을 수행&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;한번 변경한 코드를 캐시에 보관하기에 수행 속도가 빠름&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;단점: 네이티브 코드로 번역 시 시간이 소요되므로 자주 수행되지 않을 경우 좋지 않음&lt;/p&gt;
+
+&lt;h5&gt;3. Garbage Collector&lt;/h5&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Java에는 GC를 수행하는 모듈(쓰레드)이 존재&lt;/li&gt;
+  &lt;li&gt;Heap 메모리에 생성된 객체 중 Reachabiliry를 잃은 객체를 탐색 후 제거하는 역할
+&lt;br /&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h5&gt;4. Runtime Data Aread&lt;/h5&gt;
+
+&lt;h4&gt;1) Method Area(= Class Area = Static Area)&lt;/h4&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;클레스 멤버 변수, 메소드 정보, Type정보, static, final 변수 등 생성&lt;/li&gt;
+  &lt;li&gt;상수 풀(Static Area)은 모든 Symbolic Reference를 포함&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;클래스 정보를 메모리 공간에 처음 로드할 때 초기화되는 대상을 저장하기 위한 메모리 공간&lt;/p&gt;
+
+&lt;h4&gt;2)Heap Area&lt;/h4&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;객체를 저장하는 가상 메모리 공간&lt;/li&gt;
+  &lt;li&gt;new연산자를 통해 생성된 객체와 배열을 저장&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Method Area에 로드 된 클래스만 객체로 생성가능&lt;/p&gt;
+
+&lt;h4&gt;Heap Memory의 영역&lt;/h4&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;New/Young 영역&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Permanent Generation&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;old영역&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4&gt;3) Stack Area&lt;/h4&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;프로그램 실행 시 임시로 할당 후 메소드가 종료되면 소멸되는 특성의 데이터를 저장하기 위한 공간&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;매개 변수, 지역 변수, 리턴 값 및 연산이 일어나는 값이 임시로 보관될 때 사용되는 영역&lt;/p&gt;
+
+&lt;h4&gt;4) PC Register&lt;/h4&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Thread가 시작될 때 생성 생성될 때마다 해당 공간으로 스레드마다 하나씩 존재&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;어떤 부분을 어떤 명령으로 실행해야할지에 대한 기록하는 부분&lt;/p&gt;
+
+&lt;p&gt;현재 수행중인 JVM 명령의 주소를 보관&lt;/p&gt;
+
+&lt;h4&gt;5) Native Method Stack&lt;/h4&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;컴파일 시 생성 된 바이트코드가 아닌 실제 실행할 수 있는 기계어로 작성된 프로그램을 실행시키는 영역, 
+ JAVA가 아닌 다른 언어로 작성된 코드를 위한 공간&lt;/li&gt;
 &lt;/ul&gt;</content><author><name>vedivero</name></author><category term="java" /><summary type="html">Java posts java basic overload</summary></entry><entry><title type="html">java</title><link href="https://vedivero.github.io/spring-basic" rel="alternate" type="text/html" title="java" /><published>2018-09-28T01:40:00+09:00</published><updated>2018-09-28T01:40:00+09:00</updated><id>https://vedivero.github.io/spring-basic</id><content type="html" xml:base="https://vedivero.github.io/spring-basic">&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;spring framework
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name>vedivero</name></author><category term="spring" /><summary type="html">spring framework</summary></entry><entry><title type="html">overload</title><link href="https://vedivero.github.io/java-overload" rel="alternate" type="text/html" title="overload" /><published>2018-09-28T01:40:00+09:00</published><updated>2018-09-28T01:40:00+09:00</updated><id>https://vedivero.github.io/java-overload</id><content type="html" xml:base="https://vedivero.github.io/java-overload">&lt;p&gt;&lt;span class=&quot;table-of-contents-list&quot;&gt;Java posts&lt;/span&gt;&lt;/p&gt;
 &lt;ul class=&quot;table-of-contents-list&quot;&gt;
