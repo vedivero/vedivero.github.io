@@ -8,6 +8,25 @@
     
       
       <item>
+        <title>JVM</title>
+        
+          <description>&lt;p&gt;&lt;span class=&quot;table-of-contents-list&quot;&gt;Java posts&lt;/span&gt;&lt;/p&gt;
+&lt;ul class=&quot;table-of-contents-list&quot;&gt;
+    &lt;li&gt;&lt;a href=&quot;./java-jvm&quot;&gt;java basic&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href=&quot;./java-overload&quot;&gt;overload&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+</description>
+        
+        <pubDate>Sun, 16 May 2021 04:40:00 +0900</pubDate>
+        <link>
+        https://vedivero.github.io/java-jvm</link>
+        <guid isPermaLink="true">https://vedivero.github.io/java-jvm</guid>
+      </item>
+      
+    
+      
+      <item>
         <title>java</title>
         
           <description>&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;spring framework
@@ -37,25 +56,6 @@
         <link>
         https://vedivero.github.io/java-overload</link>
         <guid isPermaLink="true">https://vedivero.github.io/java-overload</guid>
-      </item>
-      
-    
-      
-      <item>
-        <title>JVM (Java virtual machine)</title>
-        
-          <description>&lt;p&gt;&lt;span class=&quot;table-of-contents-list&quot;&gt;Java posts&lt;/span&gt;&lt;/p&gt;
-&lt;ul class=&quot;table-of-contents-list&quot;&gt;
-    &lt;li&gt;&lt;a href=&quot;./java-jvm&quot;&gt;java basic&lt;/a&gt;&lt;/li&gt;
-    &lt;li&gt;&lt;a href=&quot;./java-overload&quot;&gt;overload&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-</description>
-        
-        <pubDate>Fri, 28 Sep 2018 01:40:00 +0900</pubDate>
-        <link>
-        https://vedivero.github.io/java-jvm</link>
-        <guid isPermaLink="true">https://vedivero.github.io/java-jvm</guid>
       </item>
       
     
