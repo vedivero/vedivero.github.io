@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.7.4">Jekyll</generator><link href="https://vedivero.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://vedivero.github.io/" rel="alternate" type="text/html" /><updated>2021-05-17T22:00:57+09:00</updated><id>https://vedivero.github.io/</id><title type="html">vedivero</title><entry><title type="html">JVM</title><link href="https://vedivero.github.io/java-jvm" rel="alternate" type="text/html" title="JVM" /><published>2021-05-16T04:40:00+09:00</published><updated>2021-05-16T04:40:00+09:00</updated><id>https://vedivero.github.io/java-jvm</id><content type="html" xml:base="https://vedivero.github.io/java-jvm">&lt;p&gt;&lt;span class=&quot;table-of-contents-list&quot;&gt;Java posts&lt;/span&gt;&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.7.4">Jekyll</generator><link href="https://vedivero.github.io/feed.xml" rel="self" type="application/atom+xml" /><link href="https://vedivero.github.io/" rel="alternate" type="text/html" /><updated>2021-05-17T23:36:41+09:00</updated><id>https://vedivero.github.io/</id><title type="html">vedivero</title><entry><title type="html">JVM - Java Virtual Machine</title><link href="https://vedivero.github.io/java-jvm" rel="alternate" type="text/html" title="JVM - Java Virtual Machine" /><published>2021-05-16T04:40:00+09:00</published><updated>2021-05-16T04:40:00+09:00</updated><id>https://vedivero.github.io/java-jvm</id><content type="html" xml:base="https://vedivero.github.io/java-jvm">&lt;p&gt;&lt;span class=&quot;table-of-contents-list&quot;&gt;Java posts&lt;/span&gt;&lt;/p&gt;
 &lt;ul class=&quot;table-of-contents-list&quot;&gt;
-    &lt;li&gt;&lt;a href=&quot;./java-jvm&quot;&gt;java basic&lt;/a&gt;&lt;/li&gt;
-    &lt;li&gt;&lt;a href=&quot;./java-overload&quot;&gt;overload&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href=&quot;./java-jvm&quot;&gt; JVM&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href=&quot;./java-&quot;&gt;&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
 &lt;hr /&gt;
@@ -154,14 +154,5 @@
 &lt;ul&gt;
   &lt;li&gt;컴파일 시 생성 된 바이트코드가 아닌 실제 실행할 수 있는 기계어로 작성된 프로그램을 실행시키는 영역, 
  JAVA가 아닌 다른 언어로 작성된 코드를 위한 공간&lt;/li&gt;
-&lt;/ul&gt;</content><author><name>vedivero</name></author><category term="java" /><summary type="html">Java posts java basic overload</summary></entry><entry><title type="html">java</title><link href="https://vedivero.github.io/spring-basic" rel="alternate" type="text/html" title="java" /><published>2018-09-28T01:40:00+09:00</published><updated>2018-09-28T01:40:00+09:00</updated><id>https://vedivero.github.io/spring-basic</id><content type="html" xml:base="https://vedivero.github.io/spring-basic">&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;spring framework
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name>vedivero</name></author><category term="spring" /><summary type="html">spring framework</summary></entry><entry><title type="html">overload</title><link href="https://vedivero.github.io/java-overload" rel="alternate" type="text/html" title="overload" /><published>2018-09-28T01:40:00+09:00</published><updated>2018-09-28T01:40:00+09:00</updated><id>https://vedivero.github.io/java-overload</id><content type="html" xml:base="https://vedivero.github.io/java-overload">&lt;p&gt;&lt;span class=&quot;table-of-contents-list&quot;&gt;Java posts&lt;/span&gt;&lt;/p&gt;
-&lt;ul class=&quot;table-of-contents-list&quot;&gt;
-    &lt;li&gt;&lt;a href=&quot;./java-jvm&quot;&gt;java basic&lt;/a&gt;&lt;/li&gt;
-    &lt;li&gt;&lt;a href=&quot;./java-overload&quot;&gt;overload&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;test java posting
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;test java posting test java posting
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name>vedivero</name></author><category term="java" /><summary type="html">Java posts java basic overload</summary></entry></feed>
+&lt;/ul&gt;</content><author><name>vedivero</name></author><category term="java" /><summary type="html">Java posts JVM</summary></entry><entry><title type="html">spring-test</title><link href="https://vedivero.github.io/spring-basic" rel="alternate" type="text/html" title="spring-test" /><published>2018-09-28T01:40:00+09:00</published><updated>2018-09-28T01:40:00+09:00</updated><id>https://vedivero.github.io/spring-basic</id><content type="html" xml:base="https://vedivero.github.io/spring-basic">&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;spring framework
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;</content><author><name>vedivero</name></author><category term="spring" /><summary type="html">spring framework</summary></entry></feed>
