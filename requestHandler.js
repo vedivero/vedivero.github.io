@@ -83,7 +83,7 @@ function order(response, productId) {
          new Date().toLocaleDateString() +
          "')",
       function (err, rows) {
-         alert('주문 정보 : ' + rows);
+         console.log('주문 정보 : ' + rows);
       },
    );
    response.write(order_view);
