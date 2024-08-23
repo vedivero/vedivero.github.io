@@ -71,6 +71,8 @@ function blackRacket(response) {
 }
 
 function order(response, productId) {
+   console.log(pd_nm + '@@@@@@@@@');
+
    response.writeHead(200, {
       'Content-Type': 'text/html; charset=utf-8',
    });
