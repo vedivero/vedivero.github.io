@@ -1,10 +1,10 @@
 const fs = require('fs');
-const main_view = fs.readFileSync('./index.html', 'utf-8');
+const index_view = fs.readFileSync('./index.html', 'utf-8');
 const orderlist_view = fs.readFileSync('./orderlist.html', 'utf-8');
 
 const mariadb = require('./database/connect/mariadb');
 
-function main(response) {
+function index(response) {
    mariadb.query('select * from product', function (err, rows) {
       console.log(rows);
    });
@@ -12,7 +12,7 @@ function main(response) {
    response.writeHead(200, {
       'Content-Type': 'text/html; charset=utf-8',
    });
-   response.write(main_view);
+   response.write(index_view);
    response.end();
 }
 
@@ -96,7 +96,7 @@ function order(response, productId) {
 
 let handle = {};
 
-handle['/main'] = main;
+handle['/index'] = index;
 handle['/order'] = order;
 handle['/orderlist'] = orderlist;
 
