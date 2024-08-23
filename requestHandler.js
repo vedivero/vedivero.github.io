@@ -1,5 +1,6 @@
 const fs = require('fs');
 const index_view = fs.readFileSync('./index.html', 'utf-8');
+const order_view = fs.readFileSync('./order.html', 'utf-8');
 const orderlist_view = fs.readFileSync('./orderlist.html', 'utf-8');
 
 const mariadb = require('./database/connect/mariadb');
@@ -82,13 +83,10 @@ function order(response, productId) {
          new Date().toLocaleDateString() +
          "')",
       function (err, rows) {
-         console.log(rows);
+         alert('주문 정보 : ' + rows);
       },
    );
-
-   response.write('order page<br>');
-   response.write('Racket 주문이 완료되었습니다.<br>');
-   response.write('주문 페이지를 확인하세요.');
+   response.write(order_view);
    response.end();
 }
 
