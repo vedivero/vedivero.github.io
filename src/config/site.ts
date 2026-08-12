@@ -1,6 +1,6 @@
 export const siteConfig = {
   /** Wordmark shown in the header and footer. Monograph uses text, never a logo image. */
-  name: "Monograph",
+  name: "vedivero",
   tagline: "A quiet place for long-form writing",
   title: "Monograph - A minimal Astro blog theme",
   description:
@@ -47,12 +47,12 @@ export const siteConfig = {
 export const navigation = [
   { label: "Archive", href: "/posts/" },
   { label: "Categories", href: "/categories/" },
-  { label: "About", href: "/about/" },
+  // { label: "About", href: "/about/" },
 ];
 
 /** Secondary navigation rendered in the footer. */
 export const footerNavigation = [
-  { label: "Contact", href: "/contact/" },
-  { label: "Privacy", href: "/privacy/" },
-  { label: "RSS", href: "/rss.xml" },
+  // { label: "Contact", href: "/contact/" },
+  // { label: "Privacy", href: "/privacy/" },
+  // { label: "RSS", href: "/rss.xml" },
 ];
