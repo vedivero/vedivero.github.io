@@ -90,7 +90,7 @@ const structuredData = {
   <SiteHeader posts={allPosts} />
   <main id="content" class="outer">
     <article>
-      <header class="canvas pt-10 md:pt-14">
+      <header class="inner pt-10 md:pt-14">
         <p class="meta post-meta">
           <span class="post-meta__byline">
             By <a href={authorHref} class="link-sweep post-meta__link">{data.author.name}</a> in{" "}
@@ -162,12 +162,12 @@ const structuredData = {
         </figure>
       )}
 
-      <div class="prose canvas mt-12">
+      <div class="prose inner mt-12">
         <Content components={mdxComponents} />
       </div>
 
       {(newer || older) && (
-        <footer class="canvas mt-16 border-t border-border pt-8">
+        <footer class="inner mt-16 border-t border-border pt-8">
           <nav class="grid gap-8 sm:grid-cols-2" aria-label="Post navigation">
             <div>
               {older && (
@@ -195,7 +195,7 @@ const structuredData = {
     </article>
 
     {related.length > 0 && (
-      <section class="canvas mt-[var(--space-section)]" aria-labelledby="keep-reading">
+      <section class="inner mt-[var(--space-section)]" aria-labelledby="keep-reading">
         <h2 id="keep-reading" class="section-title">Keep reading</h2>
         <div class="grid gap-7">
           {related.map((item) => <PostCard post={item} variant="compact" headingLevel="h3" />)}
@@ -341,8 +341,7 @@ const structuredData = {
     }
 
     .article-image figcaption {
-      max-width: var(--layout-content);
-      margin: 0.75rem auto 0;
+      margin: 0.75rem 0 0;
       color: var(--muted-foreground);
       font-size: 0.8125rem;
     }

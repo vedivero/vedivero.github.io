@@ -22,3 +22,10 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# other package managers' lockfiles (this project uses npm)
+pnpm-lock.yaml
+yarn.lock
+
+# local scratch files
+*.local

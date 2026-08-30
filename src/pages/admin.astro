@@ -1,0 +1,843 @@
+---
+import { getCollection } from "astro:content";
+import SiteFooter from "@/components/SiteFooter.astro";
+import SiteHeader from "@/components/SiteHeader.astro";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { categories } from "@/config/categories";
+import { defaultAuthor } from "@/config/author";
+import { visiblePosts } from "@/lib/posts";
+
+const allPosts = visiblePosts(await getCollection("posts"));
+---
+
+<BaseLayout
+  title="Write"
+  description="Local-only Markdown editor with live preview."
+  noindex
+>
+  <SiteHeader posts={allPosts} />
+  <main id="content" class="outer">
+    <div class="inner">
+      <header class="pagehead">
+        <p class="eyebrow">Local editor</p>
+        <h1 class="pagehead-title">Write a post</h1>
+        <p class="pagehead-description">
+          Only works while <code>npm run dev</code> is running on your machine. Saving writes
+          straight into <code>src/content/posts</code> — nothing here is deployed.
+        </p>
+      </header>
+
+      <div class="admin-toolbar">
+        <div class="grid gap-2">
+          <label class="text-sm font-semibold" for="admin-post-select">Edit existing post</label>
+          <select id="admin-post-select" class="field" data-admin-select>
+            <option value="">— New post —</option>
+          </select>
+        </div>
+        <div class="admin-toolbar__actions">
+          <button type="button" class="btn btn-outline" data-admin-new>New post</button>
+          <button type="button" class="btn btn-outline" data-admin-delete disabled>
+            Delete post
+          </button>
+        </div>
+      </div>
+
+      <p class="admin-status" role="status" aria-live="polite" data-admin-status></p>
+      {/* Category manager. Categories are a typed tuple in categories.ts feeding
+          the content schema, so this rewrites source rather than data — hence
+          the guard against deleting one that posts still reference. */}
+      <details class="admin-details admin-categories">
+        <summary class="text-sm font-semibold">Manage categories</summary>
+
+        <p class="admin-hint">
+          Adding, renaming, or removing a category rewrites
+          <code>src/config/categories.ts</code>. Renaming also updates every post using the
+          old name. A category still in use can't be deleted.
+        </p>
+
+        <ul class="admin-category-list" data-admin-category-list></ul>
+
+        <div class="admin-category-form">
+          <div class="admin-field">
+            <label class="text-sm font-semibold" for="admin-category-name">Name</label>
+            <input id="admin-category-name" class="field" type="text" data-admin-category-name />
+          </div>
+          <div class="admin-field admin-field--wide">
+            <label class="text-sm font-semibold" for="admin-category-description">
+              Description
+            </label>
+            <input
+              id="admin-category-description"
+              class="field"
+              type="text"
+              data-admin-category-description
+            />
+          </div>
+          <div class="admin-category-form__actions">
+            <button type="button" class="btn btn-solid" data-admin-category-save>Add</button>
+            <button type="button" class="btn btn-outline" data-admin-category-cancel hidden>
+              Cancel
+            </button>
+          </div>
+        </div>
+      </details>
+
+
+      <form data-admin-form>
+        {/* Metadata spans the full width so the editor and preview below can
+            share one row at equal width. */}
+        <div class="admin-meta">
+          <div class="admin-field admin-field--wide">
+            <label class="text-sm font-semibold" for="admin-title">Title</label>
+            <input id="admin-title" class="field" type="text" required data-admin-title />
+          </div>
+
+          <div class="admin-field admin-field--wide">
+            <label class="text-sm font-semibold" for="admin-slug">Slug</label>
+            <input
+              id="admin-slug"
+              class="field"
+              type="text"
+              pattern="[a-z0-9]+(-[a-z0-9]+)*"
+              required
+              data-admin-slug
+            />
+          </div>
+
+          <div class="admin-field">
+            <label class="text-sm font-semibold" for="admin-category">Category</label>
+            <select id="admin-category" class="field" required data-admin-category>
+              {categories.map((category) => <option value={category}>{category}</option>)}
+            </select>
+          </div>
+
+          <div class="admin-field">
+            <label class="text-sm font-semibold" for="admin-date">Date</label>
+            <input id="admin-date" class="field" type="date" required data-admin-date />
+          </div>
+
+          {/* Single-author blog: stamped from src/config/author.ts rather than
+              asked for on every post. Still real frontmatter fields, so adding a
+              second writer later only means editing the post. */}
+          <input type="hidden" value={defaultAuthor.name} data-admin-author-name />
+          <input type="hidden" value={defaultAuthor.role} data-admin-author-role />
+
+          <div class="admin-field admin-field--full">
+            <label class="text-sm font-semibold" for="admin-excerpt">Excerpt</label>
+            <textarea
+              id="admin-excerpt"
+              class="field resize-y"
+              rows="2"
+              required
+              data-admin-excerpt></textarea>
+            <p class="text-xs text-muted-foreground">
+              One or two sentences. Shown under the title in post lists and used as the
+              search-engine and link-share description, so write it for someone deciding
+              whether to click.
+            </p>
+          </div>
+        </div>
+
+        <details class="admin-details">
+          <summary class="text-sm font-semibold">More fields</summary>
+          <div class="admin-meta mt-4">
+            <div class="admin-field">
+              <label class="text-sm font-semibold" for="admin-updated-date">Updated date</label>
+              <input id="admin-updated-date" class="field" type="date" data-admin-updated-date />
+            </div>
+
+            <div class="admin-field admin-field--wide">
+              <label class="text-sm font-semibold" for="admin-cover-alt">Cover image alt text</label
+              >
+              <input id="admin-cover-alt" class="field" type="text" data-admin-cover-alt />
+              <p class="text-xs text-muted-foreground">
+                Leave blank for no cover. When set, drop the image at
+                <code>src/content/posts/&lt;slug&gt;/cover.jpg</code> yourself after saving.
+              </p>
+            </div>
+
+            <div class="admin-field">
+              <label class="text-sm font-semibold" for="admin-cover-credit-name">
+                Cover credit name
+              </label>
+              <input
+                id="admin-cover-credit-name"
+                class="field"
+                type="text"
+                data-admin-cover-credit-name
+              />
+            </div>
+
+            <div class="admin-field">
+              <label class="text-sm font-semibold" for="admin-cover-credit-url">
+                Cover credit URL
+              </label>
+              <input
+                id="admin-cover-credit-url"
+                class="field"
+                type="url"
+                data-admin-cover-credit-url
+              />
+            </div>
+
+            <div class="admin-field admin-field--full flex flex-wrap gap-6">
+              <label class="flex items-center gap-2 text-sm font-semibold">
+                <input type="checkbox" data-admin-featured /> Featured
+              </label>
+              <label class="flex items-center gap-2 text-sm font-semibold">
+                <input type="checkbox" data-admin-draft /> Draft
+              </label>
+            </div>
+          </div>
+        </details>
+
+        {/* Editor and preview sit in one row so Markdown and its rendering stay
+            side by side while writing. */}
+        <div class="admin-workspace">
+          <div class="admin-pane">
+            <label class="text-sm font-semibold" for="admin-body">Body (Markdown)</label>
+            <textarea
+              id="admin-body"
+              class="field admin-body-field resize-none"
+              required
+              data-admin-body></textarea>
+          </div>
+
+          <div class="admin-pane">
+            <p class="eyebrow">Preview</p>
+            <div class="prose admin-preview" data-admin-preview></div>
+          </div>
+        </div>
+
+        <div class="admin-actions">
+          <button type="submit" class="btn btn-solid">Save post</button>
+        </div>
+      </form>
+    </div>
+  </main>
+  <SiteFooter />
+
+  <script>
+    import { marked } from "marked";
+
+    const API_BASE = "/__admin/api/posts";
+    const CATEGORY_API = "/__admin/api/categories";
+
+    const form = document.querySelector<HTMLFormElement>("[data-admin-form]");
+    const select = document.querySelector<HTMLSelectElement>("[data-admin-select]");
+    const newButton = document.querySelector<HTMLButtonElement>("[data-admin-new]");
+    const deleteButton = document.querySelector<HTMLButtonElement>("[data-admin-delete]");
+    const status = document.querySelector<HTMLParagraphElement>("[data-admin-status]");
+    const preview = document.querySelector<HTMLDivElement>("[data-admin-preview]");
+
+    const fields = {
+      title: document.querySelector<HTMLInputElement>("[data-admin-title]"),
+      slug: document.querySelector<HTMLInputElement>("[data-admin-slug]"),
+      excerpt: document.querySelector<HTMLTextAreaElement>("[data-admin-excerpt]"),
+      category: document.querySelector<HTMLSelectElement>("[data-admin-category]"),
+      date: document.querySelector<HTMLInputElement>("[data-admin-date]"),
+      updatedDate: document.querySelector<HTMLInputElement>("[data-admin-updated-date]"),
+      authorName: document.querySelector<HTMLInputElement>("[data-admin-author-name]"),
+      authorRole: document.querySelector<HTMLInputElement>("[data-admin-author-role]"),
+      coverAlt: document.querySelector<HTMLInputElement>("[data-admin-cover-alt]"),
+      coverCreditName: document.querySelector<HTMLInputElement>("[data-admin-cover-credit-name]"),
+      coverCreditUrl: document.querySelector<HTMLInputElement>("[data-admin-cover-credit-url]"),
+      featured: document.querySelector<HTMLInputElement>("[data-admin-featured]"),
+      draft: document.querySelector<HTMLInputElement>("[data-admin-draft]"),
+      body: document.querySelector<HTMLTextAreaElement>("[data-admin-body]"),
+    };
+
+    if (
+      !form || !select || !newButton || !deleteButton || !status || !preview ||
+      Object.values(fields).some((field) => !field)
+    ) {
+      throw new Error("Admin editor: expected element missing from the page.");
+    }
+
+    /* Read off the hidden inputs Astro rendered from src/config/author.ts, so
+       the defaults have exactly one source of truth. */
+    const AUTHOR_DEFAULTS = {
+      name: fields.authorName!.value,
+      role: fields.authorRole!.value,
+    };
+
+    let currentSlug: string | null = null;
+    let currentExt: string = "md";
+    let slugTouched = false;
+
+    const todayInput = () => new Date().toISOString().slice(0, 10);
+
+    const slugify = (value: string) =>
+      value
+        .toLowerCase()
+        .replace(/&/g, "and")
+        .replace(/[^a-z0-9\s-]/g, "")
+        .trim()
+        .replace(/\s+/g, "-");
+
+    const setStatus = (message: string, isError = false) => {
+      status.textContent = message;
+      status.classList.toggle("admin-status--error", isError);
+    };
+
+    const renderPreview = () => {
+      preview.innerHTML = fields.body!.value.trim()
+        ? (marked.parse(fields.body!.value) as string)
+        : "<p class=\"text-muted-foreground\">Nothing to preview yet.</p>";
+    };
+
+    const resetForm = () => {
+      currentSlug = null;
+      currentExt = "md";
+      slugTouched = false;
+
+      form.reset();
+      fields.date!.value = todayInput();
+      fields.slug!.disabled = false;
+      deleteButton.disabled = true;
+      select.value = "";
+
+      // form.reset() clears the hidden author inputs as well; put the
+      // configured defaults back so a new post always carries an author.
+      fields.authorName!.value = AUTHOR_DEFAULTS.name;
+      fields.authorRole!.value = AUTHOR_DEFAULTS.role;
+
+      renderPreview();
+    };
+
+    const loadPostsList = async () => {
+      const previousValue = select.value;
+      try {
+        const response = await fetch(API_BASE);
+        if (!response.ok) throw new Error("List request failed");
+        const posts: { slug: string; title: string; date: string; draft: boolean }[] =
+          await response.json();
+
+        select.innerHTML = '<option value="">— New post —</option>';
+        for (const post of posts) {
+          const option = document.createElement("option");
+          option.value = post.slug;
+          option.textContent = `${post.title} (${post.date})${post.draft ? " · draft" : ""}`;
+          select.append(option);
+        }
+        select.value = previousValue;
+      } catch {
+        setStatus(
+          "Couldn't reach the local editor API. Start the dev server with `npm run dev` and reload this page.",
+          true,
+        );
+      }
+    };
+
+    const loadPost = async (slug: string) => {
+      try {
+        const response = await fetch(`${API_BASE}/${encodeURIComponent(slug)}`);
+        if (!response.ok) throw new Error("Post not found");
+        const post = await response.json();
+
+        currentSlug = post.slug;
+        currentExt = post.ext;
+        slugTouched = true;
+
+        fields.title!.value = post.frontmatter.title;
+        fields.slug!.value = post.slug;
+        fields.slug!.disabled = true;
+        fields.excerpt!.value = post.frontmatter.excerpt;
+        fields.category!.value = post.frontmatter.category;
+        fields.date!.value = post.frontmatter.date;
+        fields.updatedDate!.value = post.frontmatter.updatedDate;
+        fields.authorName!.value = post.frontmatter.author.name;
+        fields.authorRole!.value = post.frontmatter.author.role;
+        fields.coverAlt!.value = post.frontmatter.cover.alt;
+        fields.coverCreditName!.value = post.frontmatter.cover.creditName;
+        fields.coverCreditUrl!.value = post.frontmatter.cover.creditUrl;
+        fields.featured!.checked = post.frontmatter.featured;
+        fields.draft!.checked = post.frontmatter.draft;
+        fields.body!.value = post.body;
+
+        deleteButton.disabled = false;
+        renderPreview();
+        setStatus(`Loaded "${post.frontmatter.title}".`);
+      } catch {
+        setStatus(`Couldn't load post "${slug}".`, true);
+      }
+    };
+
+    fields.title!.addEventListener("input", () => {
+      if (currentSlug || slugTouched) return;
+      fields.slug!.value = slugify(fields.title!.value);
+    });
+
+    fields.slug!.addEventListener("input", () => {
+      slugTouched = true;
+    });
+
+    fields.body!.addEventListener("input", renderPreview);
+
+    // Plain textareas swallow Tab into focus-nav, which makes indenting code
+    // fences painful — insert two spaces at the cursor instead.
+    fields.body!.addEventListener("keydown", (event) => {
+      if (event.key !== "Tab") return;
+      event.preventDefault();
+      const textarea = fields.body!;
+      const { selectionStart, selectionEnd, value } = textarea;
+      textarea.value = `${value.slice(0, selectionStart)}  ${value.slice(selectionEnd)}`;
+      textarea.selectionStart = textarea.selectionEnd = selectionStart + 2;
+      renderPreview();
+    });
+
+    select.addEventListener("change", () => {
+      if (select.value) {
+        void loadPost(select.value);
+      } else {
+        resetForm();
+      }
+    });
+
+    newButton.addEventListener("click", resetForm);
+
+    deleteButton.addEventListener("click", async () => {
+      if (!currentSlug) return;
+      if (!confirm(`Delete "${fields.title!.value}"? This removes the post folder from disk.`)) return;
+
+      try {
+        const response = await fetch(`${API_BASE}/${encodeURIComponent(currentSlug)}`, {
+          method: "DELETE",
+        });
+        if (!response.ok) throw new Error("Delete failed");
+        setStatus("Post deleted.");
+        resetForm();
+        await loadPostsList();
+      } catch {
+        setStatus("Couldn't delete the post.", true);
+      }
+    });
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const slug = fields.slug!.value.trim();
+      const isNew = !currentSlug;
+
+      const frontmatter = {
+        title: fields.title!.value.trim(),
+        excerpt: fields.excerpt!.value.trim(),
+        category: fields.category!.value,
+        date: fields.date!.value,
+        updatedDate: fields.updatedDate!.value || undefined,
+        author: {
+          name: fields.authorName!.value.trim(),
+          role: fields.authorRole!.value.trim(),
+        },
+        cover: fields.coverAlt!.value.trim()
+          ? {
+              alt: fields.coverAlt!.value.trim(),
+              creditName: fields.coverCreditName!.value.trim() || undefined,
+              creditUrl: fields.coverCreditUrl!.value.trim() || undefined,
+            }
+          : undefined,
+        featured: fields.featured!.checked,
+        draft: fields.draft!.checked,
+      };
+
+      try {
+        const response = await fetch(API_BASE, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            slug,
+            isNew,
+            ext: currentExt,
+            frontmatter,
+            body: fields.body!.value,
+          }),
+        });
+
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.message ?? "Save failed");
+
+        currentSlug = result.slug;
+        fields.slug!.disabled = true;
+        deleteButton.disabled = false;
+        setStatus(`Saved to ${result.file}.`);
+        await loadPostsList();
+        select.value = result.slug;
+      } catch (error) {
+        setStatus(error instanceof Error ? error.message : "Save failed.", true);
+      }
+    });
+
+    /* ---------------------------------------------------------- categories --- */
+
+    const categoryList = document.querySelector<HTMLUListElement>("[data-admin-category-list]");
+    const categoryName = document.querySelector<HTMLInputElement>("[data-admin-category-name]");
+    const categoryDescription = document.querySelector<HTMLInputElement>(
+      "[data-admin-category-description]",
+    );
+    const categorySave = document.querySelector<HTMLButtonElement>("[data-admin-category-save]");
+    const categoryCancel = document.querySelector<HTMLButtonElement>(
+      "[data-admin-category-cancel]",
+    );
+
+    if (!categoryList || !categoryName || !categoryDescription || !categorySave || !categoryCancel) {
+      throw new Error("Admin editor: category manager elements missing from the page.");
+    }
+
+    type CategoryEntry = { name: string; description: string; count: number };
+
+    /** Set while editing an existing category; null means the form adds a new one. */
+    let editingCategory: string | null = null;
+
+    const stopEditingCategory = () => {
+      editingCategory = null;
+      categoryName.value = "";
+      categoryDescription.value = "";
+      categorySave.textContent = "Add";
+      categoryCancel.hidden = true;
+    };
+
+    const startEditingCategory = (entry: CategoryEntry) => {
+      editingCategory = entry.name;
+      categoryName.value = entry.name;
+      categoryDescription.value = entry.description;
+      categorySave.textContent = "Save";
+      categoryCancel.hidden = false;
+      categoryName.focus();
+    };
+
+    /** Keeps the post form's category dropdown in step with the managed list. */
+    const syncCategoryOptions = (entries: CategoryEntry[]) => {
+      const selected = fields.category!.value;
+      fields.category!.innerHTML = "";
+
+      for (const entry of entries) {
+        const option = document.createElement("option");
+        option.value = entry.name;
+        option.textContent = entry.name;
+        fields.category!.append(option);
+      }
+
+      if (entries.some((entry) => entry.name === selected)) fields.category!.value = selected;
+    };
+
+    const renderCategories = (entries: CategoryEntry[]) => {
+      categoryList.innerHTML = "";
+
+      for (const entry of entries) {
+        const item = document.createElement("li");
+        item.className = "admin-category";
+
+        const text = document.createElement("div");
+        text.className = "admin-category__text";
+
+        const name = document.createElement("p");
+        name.className = "admin-category__name";
+        name.textContent = entry.name;
+
+        const meta = document.createElement("p");
+        meta.className = "admin-category__meta";
+        const used = `${entry.count} post${entry.count === 1 ? "" : "s"}`;
+        meta.textContent = entry.description ? `${used} · ${entry.description}` : used;
+
+        text.append(name, meta);
+
+        const actions = document.createElement("div");
+        actions.className = "admin-category__actions";
+
+        const edit = document.createElement("button");
+        edit.type = "button";
+        edit.className = "btn btn-outline";
+        edit.textContent = "Edit";
+        edit.addEventListener("click", () => startEditingCategory(entry));
+
+        const remove = document.createElement("button");
+        remove.type = "button";
+        remove.className = "btn btn-outline";
+        remove.textContent = "Delete";
+        // Deleting a category still in use would break those posts' schema
+        // validation, so the server refuses it — disable it here too.
+        remove.disabled = entry.count > 0;
+        remove.addEventListener("click", () => void removeCategory(entry));
+
+        actions.append(edit, remove);
+        item.append(text, actions);
+        categoryList.append(item);
+      }
+    };
+
+    const loadCategories = async () => {
+      try {
+        const response = await fetch(CATEGORY_API);
+        if (!response.ok) throw new Error("List request failed");
+        const entries: CategoryEntry[] = await response.json();
+        renderCategories(entries);
+        syncCategoryOptions(entries);
+      } catch {
+        setStatus("Couldn't load categories.", true);
+      }
+    };
+
+    const saveCategory = async () => {
+      const name = categoryName.value.trim();
+      if (!name) {
+        setStatus("Category name is required.", true);
+        return;
+      }
+
+      try {
+        const response = await fetch(CATEGORY_API, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name,
+            description: categoryDescription.value.trim(),
+            previousName: editingCategory ?? undefined,
+          }),
+        });
+
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.message ?? "Save failed");
+
+        setStatus(
+          result.renamed
+            ? `Saved "${result.name}" and updated ${result.renamed} post${result.renamed === 1 ? "" : "s"}.`
+            : `Saved category "${result.name}".`,
+        );
+        stopEditingCategory();
+        await loadCategories();
+      } catch (error) {
+        setStatus(error instanceof Error ? error.message : "Couldn't save the category.", true);
+      }
+    };
+
+    const removeCategory = async (entry: CategoryEntry) => {
+      if (!confirm(`Delete the category "${entry.name}"?`)) return;
+
+      try {
+        const response = await fetch(`${CATEGORY_API}/${encodeURIComponent(entry.name)}`, {
+          method: "DELETE",
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.message ?? "Delete failed");
+
+        setStatus(`Deleted category "${entry.name}".`);
+        if (editingCategory === entry.name) stopEditingCategory();
+        await loadCategories();
+      } catch (error) {
+        setStatus(error instanceof Error ? error.message : "Couldn't delete the category.", true);
+      }
+    };
+
+    categorySave.addEventListener("click", () => void saveCategory());
+    categoryCancel.addEventListener("click", stopEditingCategory);
+
+    resetForm();
+    void loadPostsList();
+    void loadCategories();
+  </script>
+
+  <style>
+    .admin-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: 2.5rem;
+    }
+
+    .admin-toolbar__actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .admin-status {
+      margin-top: 1rem;
+      font-size: 0.875rem;
+      color: var(--muted-foreground);
+    }
+
+    .admin-status:empty {
+      display: none;
+    }
+
+    .admin-status--error {
+      color: var(--danger);
+    }
+
+    .admin-details {
+      margin-top: 1.5rem;
+    }
+
+    .admin-details summary {
+      cursor: pointer;
+      color: var(--muted-foreground);
+    }
+
+    /* Metadata row. Auto-fitting tracks keep the short fields (category, date,
+       author) on one line on wide screens and collapse them to a single column
+       on narrow ones without a separate breakpoint. */
+    .admin-meta {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+      gap: 1.25rem;
+      margin-top: 2rem;
+    }
+
+    .admin-field {
+      display: grid;
+      align-content: start;
+      gap: 0.5rem;
+      min-width: 0;
+    }
+
+    .admin-field--wide {
+      grid-column: span 2;
+    }
+
+    .admin-field--full {
+      grid-column: 1 / -1;
+    }
+
+    @media (max-width: 40rem) {
+      .admin-field--wide {
+        grid-column: 1 / -1;
+      }
+    }
+
+    .admin-hint {
+      margin-top: 0.75rem;
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      color: var(--muted-foreground);
+    }
+
+    .admin-category-list {
+      display: grid;
+      gap: 0.5rem;
+      margin-top: 1.25rem;
+      padding: 0;
+      list-style: none;
+    }
+
+    .admin-category {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 0.75rem 1rem;
+    }
+
+    .admin-category__text {
+      min-width: 0;
+    }
+
+    .admin-category__name {
+      font-size: 0.9375rem;
+      font-weight: 600;
+    }
+
+    .admin-category__meta {
+      margin-top: 0.125rem;
+      font-size: 0.8125rem;
+      color: var(--muted-foreground);
+    }
+
+    .admin-category__actions {
+      display: flex;
+      flex-shrink: 0;
+      gap: 0.5rem;
+    }
+
+    .admin-category__actions .btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.45;
+    }
+
+    .admin-category-form {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+      align-items: end;
+      gap: 1rem;
+      margin-top: 1.25rem;
+    }
+
+    .admin-category-form__actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .admin-workspace {
+      display: grid;
+      gap: 1.25rem;
+      margin-top: 2rem;
+    }
+
+    .admin-pane {
+      display: grid;
+      align-content: start;
+      gap: 0.5rem;
+      min-width: 0;
+    }
+
+    .admin-body-field {
+      /* Matches the preview pane so the two columns stay the same height. */
+      height: var(--admin-pane-height, 34rem);
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      line-height: 1.7;
+      overflow-y: auto;
+    }
+
+    .admin-preview {
+      height: var(--admin-pane-height, 34rem);
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 1.25rem 1.5rem;
+    }
+
+    /* The published page runs code through Shiki, which paints its own
+       background and token colours. The preview uses marked, which emits a bare
+       <pre><code> — and .prose pre code deliberately clears the background so
+       Shiki's can show through. Restore the frame here so the preview reads the
+       same way, borrowing the exact values .astro-code uses. */
+    .admin-preview :global(pre) {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--muted);
+      padding: 1rem 1.15rem;
+    }
+
+    .admin-preview :global(pre code) {
+      background: transparent;
+      font-size: 0.85rem;
+      line-height: 1.7;
+    }
+
+    .admin-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    @media (min-width: 60rem) {
+      .admin-workspace {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-items: start;
+      }
+
+      .admin-body-field,
+      .admin-preview {
+        --admin-pane-height: calc(100vh - 14rem);
+        min-height: 32rem;
+      }
+    }
+  </style>
+</BaseLayout>
