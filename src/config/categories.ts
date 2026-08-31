@@ -8,12 +8,7 @@
  * sidebar.
  */
 export const categories = [
-  "Engineering",
-  "Reliability",
-  "Cloud",
-  "Security",
-  "AI",
-  "Design Systems",
+  "Java",
 ] as const;
 
 export type Category = (typeof categories)[number];
@@ -28,10 +23,5 @@ export const categorySlug = (category: string) =>
 
 /** One line per category, shown on its archive page and in listings. */
 export const categoryDescriptions: Record<Category, string> = {
-  Engineering: "Contracts, tooling, and the day-to-day craft of shipping software.",
-  Reliability: "Incidents, observability, and the habits that keep systems honest.",
-  Cloud: "Infrastructure, cost, and deploy pipelines that stay out of the way.",
-  Security: "Authentication, privacy, and threat work explained for product teams.",
-  AI: "Evaluations, model behavior, and applied automation that holds up in production.",
-  "Design Systems": "Tokens, components, and the systems work that keeps interfaces coherent.",
+  Java: "",
 };
