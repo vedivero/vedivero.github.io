@@ -139,6 +139,30 @@
     flex: 1 0 auto;
   }
 
+  /* Casual-copy deterrent, paired with the guard script in BaseLayout. Form
+     fields and code blocks opt back in so the /admin editor stays usable and
+     readers can still select a snippet to run. */
+  body {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  input,
+  textarea,
+  select,
+  [contenteditable="true"],
+  .prose pre,
+  .prose code {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+
+  /* Stops the drag-to-desktop / drag-to-new-tab gesture on images. */
+  img {
+    -webkit-user-drag: none;
+    user-drag: none;
+  }
+
   img,
   svg,
   video {

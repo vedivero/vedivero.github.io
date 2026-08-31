@@ -127,6 +127,72 @@ const schema = structuredData ?? defaultStructuredData;
         });
       })();
     </script>
+    <script is:inline>
+      /*
+       * Casual-copy deterrent: blocks selection, drag, the context menu, and the
+       * devtools shortcuts.
+       *
+       * This is friction, not security. The page is static, so its HTML, CSS and
+       * JS all reach the visitor regardless, and devtools still opens from the
+       * browser's own menu — no page script can reach that. Form fields and the
+       * code-copy buttons stay exempt so the /admin editor and the "Copy" action
+       * keep working.
+       */
+      (() => {
+        const EDITABLE =
+          "input, textarea, select, [contenteditable=''], [contenteditable='true']";
+
+        /* event.target is often a text node, which has no closest(); resolve it
+           to its parent element first. Also treat whatever currently has focus
+           as editable, because a selection inside a field does not always
+           report that field as the target. */
+        const isEditable = (node) => {
+          const el =
+            node instanceof Element
+              ? node
+              : node instanceof Node
+                ? node.parentElement
+                : null;
+
+          if (el?.closest(`${EDITABLE}, .code-copy-frame, pre, code`)) return true;
+          return Boolean(document.activeElement?.closest(EDITABLE));
+        };
+
+        for (const type of ["contextmenu", "selectstart", "dragstart"]) {
+          document.addEventListener(
+            type,
+            (event) => {
+              if (isEditable(event.target)) return;
+              event.preventDefault();
+            },
+            { capture: true },
+          );
+        }
+
+        document.addEventListener(
+          "keydown",
+          (event) => {
+            const key = event.key.toLowerCase();
+
+            // Let every shortcut through while typing, or the editor breaks.
+            if (isEditable(event.target)) return;
+
+            const blocked =
+              event.key === "F12" ||
+              ((event.ctrlKey || event.metaKey) &&
+                event.shiftKey &&
+                (key === "i" || key === "j" || key === "c")) ||
+              ((event.ctrlKey || event.metaKey) &&
+                event.altKey &&
+                (key === "i" || key === "j" || key === "c")) ||
+              ((event.ctrlKey || event.metaKey) && (key === "u" || key === "s"));
+
+            if (blocked) event.preventDefault();
+          },
+          { capture: true },
+        );
+      })();
+    </script>
   </head>
   <body>
     <a class="skip-link" href="#content">Skip to content</a>
