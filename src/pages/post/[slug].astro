@@ -1,7 +1,6 @@
 ---
 import { Image } from "astro:assets";
 import { getCollection, render } from "astro:content";
-import LocalIcon from "@/components/LocalIcon.astro";
 import PostCard from "@/components/PostCard.astro";
 import SiteFooter from "@/components/SiteFooter.astro";
 import SiteHeader from "@/components/SiteHeader.astro";
@@ -47,25 +46,6 @@ const articleUrl = new URL(postHref(post), siteConfig.siteUrl).toString();
 const socialImage = data.cover
   ? new URL(data.cover.src.src, siteConfig.siteUrl).toString()
   : new URL(siteConfig.socialImage, siteConfig.siteUrl).toString();
-const encodedUrl = encodeURIComponent(articleUrl);
-const encodedTitle = encodeURIComponent(data.title);
-const shareLinks: { label: string; icon: "twitter-x" | "facebook" | "linkedin"; href: string }[] = [
-  {
-    label: "X",
-    icon: "twitter-x",
-    href: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`,
-  },
-  {
-    label: "Facebook",
-    icon: "facebook",
-    href: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
-  },
-  {
-    label: "LinkedIn",
-    icon: "linkedin",
-    href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`,
-  },
-];
 const structuredData = {
   "@context": "https://schema.org",
   "@type": "Article",
@@ -91,50 +71,23 @@ const structuredData = {
   <main id="content" class="outer">
     <article>
       <header class="inner pt-10 md:pt-14">
-        <p class="meta post-meta">
-          <span class="post-meta__byline">
-            By <a href={authorHref} class="link-sweep post-meta__link">{data.author.name}</a> in{" "}
-            <a href={categoryHref(data.category)} class="link-sweep post-meta__link">{data.category}</a>
-          </span>
-          <span class="post-meta__dates">
-            <span class="meta-accent"><time datetime={data.date.toISOString()}>{formatDate(data.date, "long")}</time></span>
-            <span>{readingLabel(post)}</span>
-          </span>
-        </p>
+        <a href={categoryHref(data.category)} class="category-badge">{data.category}</a>
 
         <h1 class="article-title">{data.title}</h1>
         <p class="article-excerpt">{data.excerpt}</p>
 
-        {data.updatedDate && (
-          <p class="meta mt-5">
-            <span>Updated <time datetime={data.updatedDate.toISOString()}>{formatDate(data.updatedDate)}</time></span>
-          </p>
-        )}
-
-        <div class="mt-8 flex flex-wrap items-center gap-2 border-t border-border pt-6" role="group" aria-labelledby="share-heading">
-          <h2 id="share-heading" class="eyebrow mr-1">Share</h2>
-          {shareLinks.map((link) => (
-            <a
-              href={link.href}
-              target="_blank"
-              rel="noreferrer"
-              class="share-btn"
-              aria-label={`Share ${data.title} on ${link.label}`}
-            >
-              <LocalIcon name={link.icon} className="h-4 w-4" />
-            </a>
-          ))}
-          <button
-            type="button"
-            class="share-btn"
-            data-copy-link
-            data-copy-url={articleUrl}
-            aria-label={`Copy link to ${data.title}`}
-          >
-            <LocalIcon name="link-45deg" className="h-4 w-4" />
-          </button>
-          <p class="ml-1 text-xs text-muted-foreground" aria-live="polite" data-copy-status></p>
-        </div>
+        <p class="post-meta">
+          <a href={authorHref} class="link-sweep post-meta__author">{data.author.name}</a>
+          <span class="post-meta__dates">
+            <time datetime={data.date.toISOString()}>{formatDate(data.date, "long")}</time>
+            <span>{readingLabel(post)}</span>
+            {data.updatedDate && (
+              <span>
+                Updated <time datetime={data.updatedDate.toISOString()}>{formatDate(data.updatedDate)}</time>
+              </span>
+            )}
+          </span>
+        </p>
       </header>
 
       {data.cover && (
@@ -206,23 +159,6 @@ const structuredData = {
   <SiteFooter />
 
   <script is:inline>
-    document.querySelectorAll("[data-copy-link]").forEach((button) => {
-      const status = button.parentElement?.querySelector("[data-copy-status]");
-
-      button.addEventListener("click", async () => {
-        const url = button.getAttribute("data-copy-url");
-        if (!url) return;
-
-        try {
-          if (!navigator.clipboard?.writeText) throw new Error("Clipboard API unavailable");
-          await navigator.clipboard.writeText(url);
-          if (status) status.textContent = "Link copied";
-        } catch {
-          if (status) status.textContent = "Copy failed";
-        }
-      });
-    });
-
     /* Progressive enhancement: every code block in the article body gets a copy
        button, added client-side so the rendered HTML stays plain. */
     document.querySelectorAll(".prose pre").forEach((pre, index) => {
@@ -264,45 +200,64 @@ const structuredData = {
   </script>
 
   <style>
+    /* Category leads the header as a filled pill: it is the one piece of meta a
+       reader scans for, so it gets colour and sits above the title. */
+    .category-badge {
+      display: inline-block;
+      border-radius: var(--radius-full);
+      background: var(--accent);
+      padding: 0.3rem 0.75rem;
+      color: var(--accent-foreground);
+      font-size: 0.6875rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: background var(--duration) var(--ease-out);
+    }
+
+    .category-badge:hover,
+    .category-badge:focus-visible {
+      background: var(--accent-strong);
+    }
+
+    /* Byline moves below the excerpt: once the category is promoted, author and
+       timing read as the footnote to the headline rather than competing with it.
+       Sentence case and a lighter weight keep them from shouting. */
     .post-meta {
-      column-gap: 0.55rem;
-    }
-
-    /* The byline is a sentence, not a list of dotted items, so it lays out as
-       inline text and keeps normal word spacing instead of the flex gap. */
-    .post-meta__byline {
-      display: inline;
-    }
-
-    .post-meta__link {
-      color: var(--foreground);
-    }
-
-    /* Mirrors `.meta > *`: the dot only takes its 2px box inside a flex item. */
-    .post-meta__dates > * {
-      display: inline-flex;
+      display: flex;
+      flex-wrap: wrap;
       align-items: center;
-      gap: 0.4rem;
+      gap: 0.4rem 0.65rem;
+      margin: 1.75rem 0 0;
+      color: var(--muted-foreground);
+      font-size: 0.8125rem;
+      line-height: 1.4;
     }
 
+    .post-meta__author {
+      color: var(--foreground);
+      font-weight: 600;
+    }
+
+    .post-meta__dates {
+      display: inline-flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.4rem 0.65rem;
+    }
+
+    /* Separator sits between the timing items only, so the author keeps a plain
+       space after it. */
     .post-meta__dates > * + *::before {
+      margin-right: 0.65rem;
+      content: "";
+      display: inline-block;
       width: 2px;
       height: 2px;
-      content: "";
       background: var(--muted-foreground);
       border-radius: 50%;
-    }
-
-    /* Once the row no longer fits, date and read time drop to a line of their
-       own rather than orphaning the read time under the byline. */
-    @media (max-width: 40rem) {
-      .post-meta__dates {
-        flex-basis: 100%;
-      }
-
-      .post-meta__dates::before {
-        display: none;
-      }
+      vertical-align: middle;
     }
 
     .article-title {
@@ -344,30 +299,6 @@ const structuredData = {
       margin: 0.75rem 0 0;
       color: var(--muted-foreground);
       font-size: 0.8125rem;
-    }
-
-    .share-btn {
-      display: inline-grid;
-      width: 2.5rem;
-      height: 2.5rem;
-      place-items: center;
-      border: 1px solid var(--border);
-      background: transparent;
-      color: var(--muted-foreground);
-      cursor: pointer;
-      padding: 0;
-      border-radius: var(--radius-full);
-      transition:
-        border-color var(--duration) var(--ease-out),
-        color var(--duration) var(--ease-out),
-        transform var(--duration) var(--ease-out);
-    }
-
-    .share-btn:hover,
-    .share-btn:focus-visible {
-      border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
-      color: var(--accent);
-      transform: translateY(-2px);
     }
   </style>
 </BaseLayout>
