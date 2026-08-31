@@ -128,6 +128,15 @@
     font-size: 1rem;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+  }
+
+  /* Fills the space between header and footer so a short page still pushes
+     the footer to the bottom of the viewport. */
+  body > main {
+    flex: 1 0 auto;
   }
 
   img,
