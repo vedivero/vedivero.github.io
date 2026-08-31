@@ -146,13 +146,34 @@ const allPosts = visiblePosts(await getCollection("posts"));
               <input id="admin-updated-date" class="field" type="date" data-admin-updated-date />
             </div>
 
+            <div class="admin-field admin-field--full">
+              <label class="text-sm font-semibold" for="admin-cover-file">Cover image</label>
+              <div class="admin-cover">
+                <img class="admin-cover__preview" alt="" hidden data-admin-cover-preview />
+                <div class="admin-cover__controls">
+                  <input
+                    id="admin-cover-file"
+                    class="field"
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/avif,image/gif"
+                    data-admin-cover-file
+                  />
+                  <button type="button" class="btn btn-outline" data-admin-cover-remove hidden>
+                    Remove cover
+                  </button>
+                </div>
+              </div>
+              <p class="text-xs text-muted-foreground">
+                Saved into the post folder. Save the post first so the folder exists.
+              </p>
+            </div>
+
             <div class="admin-field admin-field--wide">
               <label class="text-sm font-semibold" for="admin-cover-alt">Cover image alt text</label
               >
               <input id="admin-cover-alt" class="field" type="text" data-admin-cover-alt />
               <p class="text-xs text-muted-foreground">
-                Leave blank for no cover. When set, drop the image at
-                <code>src/content/posts/&lt;slug&gt;/cover.jpg</code> yourself after saving.
+                Describes the image for screen readers. Required for the cover to appear.
               </p>
             </div>
 
@@ -262,6 +283,7 @@ const allPosts = visiblePosts(await getCollection("posts"));
     };
 
     let currentSlug: string | null = null;
+    let coverExt = "";
     let currentExt: string = "md";
     let slugTouched = false;
 
@@ -280,11 +302,160 @@ const allPosts = visiblePosts(await getCollection("posts"));
       status.classList.toggle("admin-status--error", isError);
     };
 
+    /* Body images are written as paths relative to the post folder, which the
+       build resolves but the browser cannot: on /admin they would resolve
+       against the page URL and 404. Point them at the dev server's /src route
+       so the preview shows the same image the published page will. */
+    const resolvePreviewImages = (html: string) => {
+      // Same fallback as uploadImage: an unsaved draft still has a slug.
+      const slug = currentSlug ?? fields.slug!.value.trim();
+      if (!slug) return html;
+
+      return html.replace(
+        /(<img\b[^>]*\ssrc=")\.\/([^"]+)(")/g,
+        (_, before, file, after) => `${before}/src/content/posts/${slug}/${file}${after}`,
+      );
+    };
+
     const renderPreview = () => {
       preview.innerHTML = fields.body!.value.trim()
-        ? (marked.parse(fields.body!.value) as string)
+        ? resolvePreviewImages(marked.parse(fields.body!.value) as string)
         : "<p class=\"text-muted-foreground\">Nothing to preview yet.</p>";
     };
+
+
+    /* -------------------------------------------------------------- images --- */
+
+    const IMAGE_API = "/__admin/api/images";
+
+    const coverFile = document.querySelector<HTMLInputElement>("[data-admin-cover-file]");
+    const coverPreview = document.querySelector<HTMLImageElement>("[data-admin-cover-preview]");
+    const coverRemove = document.querySelector<HTMLButtonElement>("[data-admin-cover-remove]");
+
+    if (!coverFile || !coverPreview || !coverRemove) {
+      throw new Error("Admin editor: cover image elements missing from the page.");
+    }
+
+    /** Cache-busted so a re-upload to the same filename still repaints. */
+    const showCover = (ext: string) => {
+      const has = Boolean(ext && currentSlug);
+      if (has) {
+        // Vite serves files under /src directly in dev; the timestamp busts
+        // the cache so re-uploading the same name still repaints.
+        coverPreview.src = `/src/content/posts/${currentSlug}/cover.${ext}?t=${Date.now()}`;
+      }
+      coverPreview.hidden = !has;
+      coverRemove.hidden = !has;
+    };
+
+    /** Posts one image to the dev-only API and returns its relative path. */
+    const uploadImage = async (file: File, kind: "cover" | "inline", name = file.name) => {
+      /* Images live in the post's folder, so a slug is required — but not a
+         saved post: the upload endpoint creates the folder. Fall back to the
+         slug field so an image can be pasted while drafting. */
+      const slug = currentSlug ?? fields.slug!.value.trim();
+      if (!slug) {
+        setStatus("Enter a slug first — images are stored in the post's folder.", true);
+        return null;
+      }
+
+      const params = new URLSearchParams({ slug, kind, name });
+      try {
+        const response = await fetch(`${IMAGE_API}?${params}`, {
+          method: "POST",
+          headers: { "Content-Type": file.type },
+          body: file,
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.message ?? "Upload failed");
+        return result as { name: string; path: string };
+      } catch (error) {
+        setStatus(error instanceof Error ? error.message : "Couldn't upload the image.", true);
+        return null;
+      }
+    };
+
+    coverFile.addEventListener("change", async () => {
+      const file = coverFile.files?.[0];
+      if (!file) return;
+
+      const result = await uploadImage(file, "cover");
+      coverFile.value = "";
+      if (!result) return;
+
+      coverExt = result.name.split(".").pop() ?? "";
+      showCover(coverExt);
+      setStatus(`Cover uploaded. Add alt text and save to attach it.`);
+    });
+
+    coverRemove.addEventListener("click", async () => {
+      if (!currentSlug || !confirm("Remove the cover image?")) return;
+
+      try {
+        const response = await fetch(`${IMAGE_API}/${encodeURIComponent(currentSlug)}`, {
+          method: "DELETE",
+        });
+        if (!response.ok) throw new Error("Delete failed");
+        coverExt = "";
+        fields.coverAlt!.value = "";
+        showCover("");
+        setStatus("Cover removed. Save the post to update its frontmatter.");
+      } catch {
+        setStatus("Couldn't remove the cover.", true);
+      }
+    });
+
+    /** Drops the markdown for an uploaded image at the cursor. */
+    const insertImageMarkdown = (path: string, alt: string) => {
+      const textarea = fields.body!;
+      const { selectionStart, selectionEnd, value } = textarea;
+      const snippet = `![${alt}](${path})`;
+      textarea.value = `${value.slice(0, selectionStart)}${snippet}${value.slice(selectionEnd)}`;
+      // With no alt yet, park the caret inside the brackets ready to type.
+      const caret = alt ? selectionStart + snippet.length : selectionStart + 2;
+      textarea.selectionStart = textarea.selectionEnd = caret;
+      textarea.focus();
+      renderPreview();
+    };
+
+    /* Clipboard images arrive as a generic "image.png" with no meaningful
+       name, so screenshots get a dated filename instead of image-1, image-2…
+       Alt text is left empty for those: a wrong description is worse than none,
+       and the caret lands inside the brackets so it can be typed straight away. */
+    const pastedName = () => {
+      const now = new Date();
+      const stamp = [
+        now.getFullYear(),
+        `${now.getMonth() + 1}`.padStart(2, "0"),
+        `${now.getDate()}`.padStart(2, "0"),
+        `${now.getHours()}`.padStart(2, "0"),
+        `${now.getMinutes()}`.padStart(2, "0"),
+        `${now.getSeconds()}`.padStart(2, "0"),
+      ].join("");
+      return `screenshot-${stamp}`;
+    };
+
+    const handleBodyImages = async (files: File[], source: "drop" | "paste") => {
+      for (const file of files) {
+        const pasted = source === "paste";
+        const name = pasted ? `${pastedName()}.${file.type.split("/")[1] ?? "png"}` : file.name;
+        const result = await uploadImage(file, "inline", name);
+        if (!result) return;
+
+        const alt = pasted ? "" : file.name.replace(/.[^.]+$/, "");
+        insertImageMarkdown(result.path, alt);
+        setStatus(`Inserted ${result.name}.`);
+      }
+    };
+
+    fields.body!.addEventListener("paste", (event) => {
+      const files = [...(event.clipboardData?.files ?? [])].filter((f) =>
+        f.type.startsWith("image/"),
+      );
+      if (!files.length) return;
+      event.preventDefault();
+      void handleBodyImages(files, "paste");
+    });
 
     const resetForm = () => {
       currentSlug = null;
@@ -295,6 +466,8 @@ const allPosts = visiblePosts(await getCollection("posts"));
       fields.date!.value = todayInput();
       fields.slug!.disabled = false;
       deleteButton.disabled = true;
+      coverExt = "";
+      showCover("");
       select.value = "";
 
       // form.reset() clears the hidden author inputs as well; put the
@@ -313,13 +486,31 @@ const allPosts = visiblePosts(await getCollection("posts"));
         const posts: { slug: string; title: string; date: string; draft: boolean }[] =
           await response.json();
 
-        select.innerHTML = '<option value="">— New post —</option>';
-        for (const post of posts) {
-          const option = document.createElement("option");
-          option.value = post.slug;
-          option.textContent = `${post.title} (${post.date})${post.draft ? " · draft" : ""}`;
-          select.append(option);
+        // Reconcile the options in place. Rebuilding them would collapse the
+        // dropdown if it happened to be open and made the control flash on
+        // every save or delete.
+        const labels = [
+          { value: "", text: "— New post —" },
+          ...posts.map((post) => ({
+            value: post.slug,
+            text: `${post.title} (${post.date})${post.draft ? " · draft" : ""}`,
+          })),
+        ];
+
+        labels.forEach((label, index) => {
+          let option = select.options[index];
+          if (!option) {
+            option = document.createElement("option");
+            select.append(option);
+          }
+          if (option.value !== label.value) option.value = label.value;
+          if (option.textContent !== label.text) option.textContent = label.text;
+        });
+
+        while (select.options.length > labels.length) {
+          select.remove(select.options.length - 1);
         }
+
         select.value = previousValue;
       } catch {
         setStatus(
@@ -349,6 +540,7 @@ const allPosts = visiblePosts(await getCollection("posts"));
         fields.authorName!.value = post.frontmatter.author.name;
         fields.authorRole!.value = post.frontmatter.author.role;
         fields.coverAlt!.value = post.frontmatter.cover.alt;
+        coverExt = post.frontmatter.cover.ext;
         fields.coverCreditName!.value = post.frontmatter.cover.creditName;
         fields.coverCreditUrl!.value = post.frontmatter.cover.creditUrl;
         fields.featured!.checked = post.frontmatter.featured;
@@ -356,6 +548,7 @@ const allPosts = visiblePosts(await getCollection("posts"));
         fields.body!.value = post.body;
 
         deleteButton.disabled = false;
+        showCover(coverExt);
         renderPreview();
         setStatus(`Loaded "${post.frontmatter.title}".`);
       } catch {
@@ -390,6 +583,21 @@ const allPosts = visiblePosts(await getCollection("posts"));
       if (select.value) {
         void loadPost(select.value);
       } else {
+
+    fields.body!.addEventListener("dragover", (event) => {
+      if (![...(event.dataTransfer?.types ?? [])].includes("Files")) return;
+      event.preventDefault();
+    });
+
+    fields.body!.addEventListener("drop", (event) => {
+      const files = [...(event.dataTransfer?.files ?? [])].filter((f) =>
+        f.type.startsWith("image/"),
+      );
+      if (!files.length) return;
+      event.preventDefault();
+      void handleBodyImages(files, "drop");
+    });
+
         resetForm();
       }
     });
@@ -432,6 +640,7 @@ const allPosts = visiblePosts(await getCollection("posts"));
         cover: fields.coverAlt!.value.trim()
           ? {
               alt: fields.coverAlt!.value.trim(),
+              ext: coverExt,
               creditName: fields.coverCreditName!.value.trim() || undefined,
               creditUrl: fields.coverCreditUrl!.value.trim() || undefined,
             }
@@ -459,9 +668,13 @@ const allPosts = visiblePosts(await getCollection("posts"));
         currentSlug = result.slug;
         fields.slug!.disabled = true;
         deleteButton.disabled = false;
-        setStatus(`Saved to ${result.file}.`);
-        await loadPostsList();
-        select.value = result.slug;
+        setStatus(`Saved to ${result.file}. Opening the home page…`);
+
+        /* Full navigation, not history.pushState: the save wrote a markdown
+           file, so the home page has to be re-rendered from the rebuilt content
+           collection. href beats assign() here because a beforeunload handler
+           or an in-flight fetch can leave assign() silently ignored. */
+        window.location.href = "/";
       } catch (error) {
         setStatus(error instanceof Error ? error.message : "Save failed.", true);
       }
@@ -508,60 +721,103 @@ const allPosts = visiblePosts(await getCollection("posts"));
     /** Keeps the post form's category dropdown in step with the managed list. */
     const syncCategoryOptions = (entries: CategoryEntry[]) => {
       const selected = fields.category!.value;
-      fields.category!.innerHTML = "";
+      const select = fields.category!;
 
-      for (const entry of entries) {
-        const option = document.createElement("option");
-        option.value = entry.name;
-        option.textContent = entry.name;
-        fields.category!.append(option);
+      // Reconcile in place: rebuilding the options would close an open dropdown
+      // and reset the selection mid-edit.
+      entries.forEach((entry, index) => {
+        let option = select.options[index];
+        if (!option) {
+          option = document.createElement("option");
+          select.append(option);
+        }
+        if (option.value !== entry.name) option.value = entry.name;
+        if (option.textContent !== entry.name) option.textContent = entry.name;
+      });
+
+      while (select.options.length > entries.length) {
+        select.remove(select.options.length - 1);
       }
 
-      if (entries.some((entry) => entry.name === selected)) fields.category!.value = selected;
+      if (entries.some((entry) => entry.name === selected)) select.value = selected;
     };
 
+    /** Builds one row. Handlers read `entry` from the element, so only the data
+        has to be refreshed when a row is reused. */
+    const createCategoryRow = () => {
+      const item = document.createElement("li");
+      item.className = "admin-category";
+
+      const text = document.createElement("div");
+      text.className = "admin-category__text";
+
+      const name = document.createElement("p");
+      name.className = "admin-category__name";
+
+      const meta = document.createElement("p");
+      meta.className = "admin-category__meta";
+
+      text.append(name, meta);
+
+      const actions = document.createElement("div");
+      actions.className = "admin-category__actions";
+
+      const edit = document.createElement("button");
+      edit.type = "button";
+      edit.className = "btn btn-outline";
+      edit.textContent = "Edit";
+
+      const remove = document.createElement("button");
+      remove.type = "button";
+      remove.className = "btn btn-outline";
+      remove.textContent = "Delete";
+
+      actions.append(edit, remove);
+      item.append(text, actions);
+
+      // Bound once per row and kept across updates; `rowData` is reassigned by
+      // updateCategoryRow so the handlers always see the current entry.
+      let rowData: CategoryEntry;
+      edit.addEventListener("click", () => startEditingCategory(rowData));
+      remove.addEventListener("click", () => void removeCategory(rowData));
+
+      return {
+        item,
+        update(entry: CategoryEntry) {
+          rowData = entry;
+          if (name.textContent !== entry.name) name.textContent = entry.name;
+
+          const used = `${entry.count} post${entry.count === 1 ? "" : "s"}`;
+          const metaText = entry.description ? `${used} · ${entry.description}` : used;
+          if (meta.textContent !== metaText) meta.textContent = metaText;
+
+          // Deleting a category still in use would break those posts' schema
+          // validation, so the server refuses it — disable it here too.
+          const disabled = entry.count > 0;
+          if (remove.disabled !== disabled) remove.disabled = disabled;
+        },
+      };
+    };
+
+    type CategoryRow = ReturnType<typeof createCategoryRow>;
+    const categoryRows: CategoryRow[] = [];
+
+    /* Reconciles rows against the new data instead of clearing the list, so
+       unchanged rows are never torn down — that teardown is what made the list
+       flash on every add, rename, or delete. */
     const renderCategories = (entries: CategoryEntry[]) => {
-      categoryList.innerHTML = "";
+      entries.forEach((entry, index) => {
+        let row = categoryRows[index];
+        if (!row) {
+          row = createCategoryRow();
+          categoryRows[index] = row;
+          categoryList.append(row.item);
+        }
+        row.update(entry);
+      });
 
-      for (const entry of entries) {
-        const item = document.createElement("li");
-        item.className = "admin-category";
-
-        const text = document.createElement("div");
-        text.className = "admin-category__text";
-
-        const name = document.createElement("p");
-        name.className = "admin-category__name";
-        name.textContent = entry.name;
-
-        const meta = document.createElement("p");
-        meta.className = "admin-category__meta";
-        const used = `${entry.count} post${entry.count === 1 ? "" : "s"}`;
-        meta.textContent = entry.description ? `${used} · ${entry.description}` : used;
-
-        text.append(name, meta);
-
-        const actions = document.createElement("div");
-        actions.className = "admin-category__actions";
-
-        const edit = document.createElement("button");
-        edit.type = "button";
-        edit.className = "btn btn-outline";
-        edit.textContent = "Edit";
-        edit.addEventListener("click", () => startEditingCategory(entry));
-
-        const remove = document.createElement("button");
-        remove.type = "button";
-        remove.className = "btn btn-outline";
-        remove.textContent = "Delete";
-        // Deleting a category still in use would break those posts' schema
-        // validation, so the server refuses it — disable it here too.
-        remove.disabled = entry.count > 0;
-        remove.addEventListener("click", () => void removeCategory(entry));
-
-        actions.append(edit, remove);
-        item.append(text, actions);
-        categoryList.append(item);
+      for (const row of categoryRows.splice(entries.length)) {
+        row.item.remove();
       }
     };
 
@@ -768,6 +1024,30 @@ const allPosts = visiblePosts(await getCollection("posts"));
     .admin-category-form__actions {
       display: flex;
       gap: 0.5rem;
+    }
+
+    .admin-cover {
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .admin-cover__preview {
+      max-height: 12rem;
+      width: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      object-fit: contain;
+    }
+
+    .admin-cover__controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .admin-cover__controls .field {
+      flex: 1 1 16rem;
     }
 
     .admin-workspace {

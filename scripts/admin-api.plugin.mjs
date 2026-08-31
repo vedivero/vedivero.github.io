@@ -2,7 +2,7 @@
 // src/pages/admin.astro). `configureServer` is a Vite dev-server hook, so this
 // code never runs during `astro build` and ships nothing to the production
 // bundle deployed to GitHub Pages.
-import { mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 import matter from "gray-matter";
 
@@ -12,6 +12,7 @@ const API_PREFIX = "/__admin/api/posts";
 const ADMIN_PAGE = "src/pages/admin.astro";
 const CATEGORIES_FILE = path.join(process.cwd(), "src/config/categories.ts");
 const CATEGORY_API_PREFIX = "/__admin/api/categories";
+const IMAGE_API_PREFIX = "/__admin/api/images";
 
 const isValidSlug = (slug) => typeof slug === "string" && SLUG_PATTERN.test(slug);
 
@@ -70,7 +71,8 @@ const toFrontmatter = (data) => {
   lines.push(`author:`, `  name: ${quote(data.author.name)}`, `  role: ${quote(data.author.role)}`);
 
   if (data.cover?.alt) {
-    lines.push(`cover:`, `  src: "./cover.jpg"`, `  alt: ${quote(data.cover.alt)}`);
+    const coverExt = data.cover.ext || `jpg`;
+    lines.push(`cover:`, `  src: "./cover.${coverExt}"`, `  alt: ${quote(data.cover.alt)}`);
     if (data.cover.creditName) lines.push(`  creditName: ${quote(data.cover.creditName)}`);
     if (data.cover.creditUrl) lines.push(`  creditUrl: ${quote(data.cover.creditUrl)}`);
   }
@@ -118,6 +120,7 @@ const readPost = async (slug) => {
 
   const raw = await readFile(found.file, "utf-8");
   const { data, content } = matter(raw);
+  const coverExt = await findCover(slug);
   const toDateInput = (value) =>
     value instanceof Date ? value.toISOString().slice(0, 10) : (value ?? "");
 
@@ -135,7 +138,8 @@ const readPost = async (slug) => {
         alt: data.cover?.alt ?? "",
         creditName: data.cover?.creditName ?? "",
         creditUrl: data.cover?.creditUrl ?? "",
-        hasImage: Boolean(data.cover),
+        ext: coverExt ?? "",
+        hasImage: Boolean(coverExt),
       },
       featured: Boolean(data.featured),
       draft: Boolean(data.draft),
@@ -335,6 +339,118 @@ const deleteCategory = async (name) => {
   await writeCategories(entries.filter((entry) => entry.name !== name));
 };
 
+/* ---------------------------------------------------------------- images --- */
+
+/** Extensions Astro's image pipeline can process, mapped from the MIME type. */
+const IMAGE_TYPES = new Map([
+  ["image/jpeg", "jpg"],
+  ["image/png", "png"],
+  ["image/webp", "webp"],
+  ["image/avif", "avif"],
+  ["image/gif", "gif"],
+]);
+
+const MAX_IMAGE_BYTES = 12 * 1024 * 1024;
+
+/** Reads a request body as a Buffer, refusing anything over the size cap. */
+const readBinaryBody = (req, limit = MAX_IMAGE_BYTES) =>
+  new Promise((resolve, reject) => {
+    const chunks = [];
+    let size = 0;
+    req.on("data", (chunk) => {
+      size += chunk.length;
+      if (size > limit) {
+        reject(Object.assign(new Error("Image is larger than 12 MB."), { status: 413 }));
+        req.destroy();
+        return;
+      }
+      chunks.push(chunk);
+    });
+    req.on("end", () => resolve(Buffer.concat(chunks)));
+    req.on("error", reject);
+  });
+
+/**
+ * Turns a user-supplied filename into a safe, collision-free basename inside
+ * the post folder. The name reaches the markdown as a relative path, so it has
+ * to stay free of separators and characters that would need escaping.
+ */
+const imageFileName = async (dir, original, ext) => {
+  const base =
+    path
+      .basename(original ?? "", path.extname(original ?? ""))
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 60) || "image";
+
+  for (let i = 0; i < 100; i++) {
+    const name = i === 0 ? `${base}.${ext}` : `${base}-${i}.${ext}`;
+    try {
+      await stat(path.join(dir, name));
+    } catch {
+      return name; // does not exist yet
+    }
+  }
+  return `${base}-${Date.now()}.${ext}`;
+};
+
+/**
+ * Stores an uploaded image beside the post that references it, so Astro's
+ * relative-path image pipeline picks it up and optimises it at build time.
+ * `cover` is written as cover.<ext> because the frontmatter points at it by a
+ * fixed name.
+ */
+const saveImage = async ({ slug, kind, fileName, contentType, body }) => {
+  if (!isValidSlug(slug)) fail("Invalid slug.", 400);
+
+  const ext = IMAGE_TYPES.get(contentType);
+  if (!ext) fail("Unsupported image type. Use JPEG, PNG, WebP, AVIF, or GIF.", 415);
+  if (!body?.length) fail("Empty upload.", 400);
+
+  const dir = path.join(POSTS_DIR, slug);
+  await mkdir(dir, { recursive: true });
+
+  if (kind === "cover") {
+    // Only one cover can exist; drop the other extensions so a jpg->png swap
+    // cannot leave two candidates behind.
+    for (const candidate of IMAGE_TYPES.values()) {
+      if (candidate !== ext) await rm(path.join(dir, `cover.${candidate}`), { force: true });
+    }
+    const name = `cover.${ext}`;
+    await writeFile(path.join(dir, name), body);
+    return { name, path: `./${name}` };
+  }
+
+  const name = await imageFileName(dir, fileName, ext);
+  await writeFile(path.join(dir, name), body);
+  return { name, path: `./${name}` };
+};
+
+/** Removes a post's cover, whichever extension it was stored under. */
+const deleteCover = async (slug) => {
+  if (!isValidSlug(slug)) fail("Invalid slug.", 400);
+  const dir = path.join(POSTS_DIR, slug);
+  for (const ext of IMAGE_TYPES.values()) {
+    await rm(path.join(dir, `cover.${ext}`), { force: true });
+  }
+};
+
+/** The cover's on-disk extension, or null when the post has no cover file. */
+const findCover = async (slug) => {
+  if (!isValidSlug(slug)) return null;
+  for (const ext of IMAGE_TYPES.values()) {
+    try {
+      await stat(path.join(POSTS_DIR, slug, `cover.${ext}`));
+      return ext;
+    } catch {
+      // try next extension
+    }
+  }
+  return null;
+};
+
+
 export function adminApiPlugin() {
   return {
     name: "admin-api",
@@ -342,13 +458,44 @@ export function adminApiPlugin() {
       server.middlewares.use(async (req, res, next) => {
         const isPostApi = req.url?.startsWith(API_PREFIX);
         const isCategoryApi = req.url?.startsWith(CATEGORY_API_PREFIX);
-        if (!isPostApi && !isCategoryApi) return next();
+        const isImageApi = req.url?.startsWith(IMAGE_API_PREFIX);
+        if (!isPostApi && !isCategoryApi && !isImageApi) return next();
 
         const url = new URL(req.url, "http://localhost");
-        const prefix = isCategoryApi ? CATEGORY_API_PREFIX : API_PREFIX;
+        const prefix = isImageApi
+          ? IMAGE_API_PREFIX
+          : isCategoryApi
+            ? CATEGORY_API_PREFIX
+            : API_PREFIX;
         const rest = url.pathname.slice(prefix.length).replace(/^\//, "");
 
         try {
+          if (isImageApi) {
+            // Binary upload: the image rides in the body and its metadata in
+            // query params, which avoids pulling in a multipart parser.
+            if (req.method === "POST") {
+              const slug = url.searchParams.get("slug");
+              const kind = url.searchParams.get("kind") === "cover" ? "cover" : "inline";
+              const fileName = url.searchParams.get("name") ?? "";
+              const body = await readBinaryBody(req);
+              const result = await saveImage({
+                slug,
+                kind,
+                fileName,
+                contentType: (req.headers["content-type"] ?? "").split(";")[0].trim(),
+                body,
+              });
+              return sendJson(res, 200, result);
+            }
+
+            if (req.method === "DELETE" && rest) {
+              await deleteCover(decodeURIComponent(rest));
+              return sendJson(res, 200, { ok: true });
+            }
+
+            return sendJson(res, 404, { message: "Unknown image API route." });
+          }
+
           if (isCategoryApi) {
             if (req.method === "GET" && rest === "") {
               return sendJson(res, 200, await readCategories());
