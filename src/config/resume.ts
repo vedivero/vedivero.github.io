@@ -67,11 +67,18 @@ export interface ResumeOpenSource {
   points: ResumePoint[];
 }
 
+/** A card under the introduction. */
+export interface ResumeHighlight {
+  title: string;
+  description: string;
+  tags: string[];
+}
+
 export const resume = {
-  name: "vedivero",
+  name: "이현석",
   /** Shown in parentheses after the name. Leave blank to hide. */
   alias: "",
-  tagline: "Backend Developer",
+  tagline: "Full Stack Developer",
   /** Optional. Drop a file in public/ and point at it, e.g. "/profile.jpg". */
   photo: "",
   /** Callout under the contact links. Leave blank to hide — commenting the key
@@ -83,9 +90,9 @@ export const resume = {
   signature: "",
 
   links: [
-    { label: "Email", href: "mailto:vedivero73@gmail.com", text: "vedivero73@gmail.com" },
-    { label: "GitHub", href: "https://github.com/vedivero", text: "@vedivero" },
-    { label: "Blog", href: "https://vedivero.github.io", text: "vedivero.github.io" },
+    // { label: "Email", href: "mailto:vedivero73@gmail.com", text: "vedivero73@gmail.com" },
+    // { label: "GitHub", href: "https://github.com/vedivero", text: "@vedivero" },
+    // { label: "Blog", href: "https://vedivero.github.io", text: "vedivero.github.io" },
   ] as ResumeLink[],
 
   /**
@@ -101,32 +108,37 @@ export const resume = {
 
   /** Free-form paragraphs. */
   introduce: [
-    "4년 9개월의 웹 개발 경력을 바탕으로, TypeScript, Java, NestJS, Next.js, Spring Boot 등 다양한 백엔드 및 프론트엔드 프레임워크에서 실무 경험을 쌓았습니다. REST API와 TypeORM, PostgreSQL, MySQL, MongoDB 등 여러 DBMS 환경에서 데이터 모델링과 최적화 작업을 수행해왔습니다. PostGIS를 활용한 공간 데이터 처리 경험과 DBeaver를 통한 데이터베이스 관리 역량도 보유하고 있습니다.",
-    "백엔드와 프론트엔드에 대한 이해를 바탕으로, 협업과 커뮤니케이션 능력 또한 뛰어납니다. 새로운 기술 도입과 문제 해결에 적극적으로 임하며, 빠르게 변화하는 개발 환경에 능동적으로 대응할 수 있는 역량을 갖추고 있습니다.",
+    "4년 9개월의 웹 개발 경력을 바탕으로, TypeScript, Java, NestJS, Next.js, Spring Boot 등 다양한 백엔드 및 프론트엔드 프레임워크에서 실무 경험을 쌓았습니다.",
+    "REST API와 TypeORM, PostgreSQL, MySQL, MongoDB 등 여러 DBMS 환경에서 데이터 모델링과 최적화 작업을 수행해왔습니다.",
+    "PostGIS를 활용한 공간 데이터 처리 경험과 DBeaver를 통한 데이터베이스 관리 역량도 보유하고 있습니다.",
+    "백엔드와 프론트엔드에 대한 이해를 바탕으로, 협업과 커뮤니케이션 능력 또한 뛰어납니다.",
+    "새로운 기술 도입과 문제 해결에 적극적으로 임하며, 빠르게 변화하는 개발 환경에 능동적으로 대응할 수 있는 역량을 갖추고 있습니다.",
     "특히, 맡은 업무를 수행하는 것은 물론이고 구성원들과 잘 지내고 좋은 관계를 바탕으로 함께 일하는 것에 큰 보람을 느끼는 사람입니다.",
   ],
 
   /** Highlight cards under the introduction. */
   highlights: [
-    {
-      title: "LLM · 벡터 검색",
-      description:
-        "임베딩 모델을 사내 GPU 서버에 서빙하고, 부품 데이터를 색인해 자연어로 검색하는 파이프라인을 설계·구현",
-      tags: ["Milvus", "BGE-M3", "FastAPI"],
-    },
-    {
-      title: "공간정보(GIS) 개발",
-      description:
-        "QGIS·GeoServer·OpenLayers·Cesium을 활용한 지도 구축과 PostGIS 기반 공간 분석, WMTS 전환을 통한 성능 개선",
-      tags: ["PostGIS", "GeoServer", "OpenLayers", "Cesium"],
-    },
-    {
-      title: "서버와 화면 모두",
-      description:
-        "Java·Spring Boot와 TypeScript·NestJS를 오가며 API를 설계하고, React 기반 화면까지 함께 담당",
-      tags: ["Spring Boot", "NestJS", "React"],
-    },
-  ],
+    // {
+    //   title: "풀스택 개발",
+    //   description:
+    //     "Java·Spring Boot와 TypeScript·NestJS를 오가며 API를 설계하고, React 기반 화면까지 함께 담당",
+    //   tags: ["Spring Boot", "NestJS", "React"],
+    // },
+    // {
+    //   title: "공간정보(GIS) 개발",
+    //   description:
+    //     "QGIS·GeoServer·OpenLayers·Cesium을 활용한 지도 구축과 PostGIS 기반 공간 분석, WMTS 전환을 통한 성능 개선",
+    //   tags: ["PostGIS", "GeoServer", "OpenLayers", "Cesium"],
+    // },
+    // {
+    //   title: "LLM · 벡터 검색",
+    //   description:
+    //     "임베딩 모델을 사내 GPU 서버에 서빙하고, 부품 데이터를 색인해 자연어로 검색하는 파이프라인을 설계·구현",
+    //   tags: ["Milvus", "BGE-M3", "FastAPI"],
+    // },
+
+
+  ] as ResumeHighlight[],
 
   /** Total across every company, e.g. "총 5년 3개월". Blank hides it. */
   experienceTotal: "",
@@ -361,13 +373,14 @@ export const resume = {
 
   /** Grouped skills. The group name is the row label. */
   skills: [
-    { group: "Languages", items: ["Java", "TypeScript", "JavaScript", "Python", "HTML"] },
+    { group: "Languages", items: ["Java", "TypeScript", "Python"] },
     {
       group: "Frameworks & Libraries",
       items: [
         "Spring Boot",
         "Spring Security",
         "전자정부 표준프레임워크",
+        "MyBatis",
         "FastAPI",
         "NestJS",
         "Node.js",
@@ -377,21 +390,19 @@ export const resume = {
     },
     {
       group: "Databases",
-      items: ["PostgreSQL", "MySQL", "Oracle", "MongoDB", "Milvus", "MyBatis", "DBeaver"],
+      items: ["PostgreSQL", "MySQL", "Oracle", "MongoDB", "Milvus"],
     },
     { group: "GIS", items: ["PostGIS", "GeoServer", "QGIS", "OpenLayers", "Cesium"] },
     {
       group: "Cloud & Deployment",
-      items: ["Docker", "AWS EC2", "Firebase", "Netlify", "Apache", "JEUS", "CentOS", "Linux"],
+      items: ["Docker", "AWS EC2", "Netlify", "Apache", "JEUS", "CentOS", "Linux"],
     },
-    { group: "Tools", items: ["Git", "GitHub", "SVN", "Slack", "Notion"] },
+    { group: "Tools", items: ["Git", "GitHub", "SVN", "DBeaver", "Slack", "Notion"] },
   ],
 
   openSource: [] as ResumeOpenSource[],
 
-  education: [] as ResumeEntry[],
-
-  etc: [
+  education: [
     {
       period: "2024. 08 ~ 2025. 02",
       title: "프로그래머스",
@@ -403,4 +414,6 @@ export const resume = {
       subtitle: "전자정부 프레임워크 자바(JAVA) 개발자 양성",
     },
   ] as ResumeEntry[],
+
+  etc: [] as ResumeEntry[],
 };
