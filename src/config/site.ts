@@ -47,6 +47,7 @@ export const siteConfig = {
 export const navigation = [
   { label: "Archive", href: "/posts/" },
   { label: "Categories", href: "/categories/" },
+  { label: "Resume", href: "/resume/" },
   // { label: "About", href: "/about/" },
 ];
 

@@ -1,0 +1,164 @@
+---
+import * as simpleIcons from "simple-icons";
+import deviconData from "@iconify-json/devicon/icons.json";
+
+/**
+ * A technology pill with its brand logo.
+ *
+ * Icons are inlined at build time from two sets, so nothing is fetched at
+ * runtime and no icon library ships to the browser:
+ *
+ * - simple-icons for most marks: single-path, so it takes the brand colour.
+ * - devicon for the few simple-icons drops on trademark grounds (Java, Oracle),
+ *   whose icons are full colour and carry their own 128x128 viewBox.
+ *
+ * Anything neither set covers — in-house or niche tooling like 전자정부
+ * 표준프레임워크, JEUS and MyBatis — falls back to a coloured dot, so every pill
+ * still carries a mark and the row stays even.
+ */
+
+interface Props {
+  name: string;
+}
+
+const { name } = Astro.props;
+
+/** Tag name to its devicon key, for marks simple-icons does not carry. */
+const DEVICONS: Record<string, string> = {
+  Java: "java",
+  Oracle: "oracle",
+};
+
+/** Tag name to its simple-icons export. */
+const ICONS: Record<string, string> = {
+  Apache: "siApache",
+  CentOS: "siCentos",
+  Cesium: "siCesium",
+  DBeaver: "siDbeaver",
+  Docker: "siDocker",
+  Express: "siExpress",
+  FastAPI: "siFastapi",
+  Firebase: "siFirebase",
+  Git: "siGit",
+  GitHub: "siGithub",
+  HTML: "siHtml5",
+  JavaScript: "siJavascript",
+  Linux: "siLinux",
+  Milvus: "siMilvus",
+  MongoDB: "siMongodb",
+  MySQL: "siMysql",
+  NestJS: "siNestjs",
+  Netlify: "siNetlify",
+  "Node.js": "siNodedotjs",
+  Notion: "siNotion",
+  OpenLayers: "siOpenlayers",
+  PostgreSQL: "siPostgresql",
+  Python: "siPython",
+  QGIS: "siQgis",
+  React: "siReact",
+  SVN: "siSubversion",
+  Spring: "siSpring",
+  "Spring Boot": "siSpringboot",
+  "Spring Security": "siSpringsecurity",
+  "Three.js": "siThreedotjs",
+  TypeScript: "siTypescript",
+};
+
+/** Fallback colours by category, for the tags with no brand logo. */
+const CATEGORY_COLORS: Record<string, string> = {
+  // No mark in either set; brand colour keeps them distinguishable.
+  "AWS EC2": "#FF9900",
+  Slack: "#4A154B",
+  // GIS
+  GeoServer: "#5A9E4B",
+  PostGIS: "#4169E1",
+  // Persistence / in-house frameworks
+  MyBatis: "#DC382D",
+  iBatis: "#DC382D",
+  JEUS: "#0B4DA2",
+  "전자정부 표준프레임워크": "#1A4FA0",
+};
+
+const icon = (simpleIcons as Record<string, { path: string; hex: string } | undefined>)[
+  ICONS[name] ?? ""
+];
+
+const devicons = deviconData as {
+  width: number;
+  height: number;
+  icons: Record<string, { body: string; width?: number; height?: number } | undefined>;
+};
+const devicon = devicons.icons[DEVICONS[name] ?? ""];
+const deviconBox = devicon
+  ? `0 0 ${devicon.width ?? devicons.width} ${devicon.height ?? devicons.height}`
+  : "";
+
+const dotColor = CATEGORY_COLORS[name];
+---
+
+<li class="tech-tag">
+  {
+    icon ? (
+      <svg
+        class="tech-tag__icon"
+        viewBox="0 0 24 24"
+        fill={`#${icon.hex}`}
+        aria-hidden="true"
+        set:html={`<path d="${icon.path}" />`}
+      />
+    ) : devicon ? (
+      /* Already multi-colour, so it carries no fill of its own and is left out
+         of the dark-mode inversion the single-colour marks need. */
+      <svg
+        class="tech-tag__icon tech-tag__icon--color"
+        viewBox={deviconBox}
+        aria-hidden="true"
+        set:html={devicon.body}
+      />
+    ) : (
+      <span
+        class="tech-tag__dot"
+        style={dotColor ? `background:${dotColor}` : undefined}
+        aria-hidden="true"
+      />
+    )
+  }
+  <span>{name}</span>
+</li>
+
+<style>
+  .tech-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-full);
+    background: var(--card);
+    padding: 0.25rem 0.75rem 0.25rem 0.6rem;
+    color: var(--foreground);
+    font-size: 0.8125rem;
+    line-height: 1.4;
+  }
+
+  .tech-tag__icon {
+    width: 0.9rem;
+    height: 0.9rem;
+    flex-shrink: 0;
+  }
+
+  /* Several brands are near-black, which disappears against a dark background;
+     lift those to the foreground colour rather than special-casing each one.
+     Multi-colour marks keep their own palette — inverting them would destroy it. */
+  :root[data-theme="dark"] .tech-tag__icon:not(.tech-tag__icon--color) {
+    filter: brightness(0) invert(1) opacity(0.85);
+  }
+
+  .tech-tag__dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    flex-shrink: 0;
+    /* Falls back to the accent when the tag has no colour of its own. */
+    background: var(--accent);
+    border-radius: 50%;
+  }
+</style>

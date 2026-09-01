@@ -1,0 +1,71 @@
+---
+import type { ResumePoint } from "@/config/resume";
+
+interface Props {
+  points: ResumePoint[];
+  /** Sub-lists render smaller and hollow-bulleted, matching the reference. */
+  nested?: boolean;
+}
+
+const { points, nested = false } = Astro.props;
+---
+
+{
+  /* Recursive: a point's children are the same shape, so the component calls
+     itself rather than the page hard-coding a second level. */
+}
+<ul class:list={["resume-points", nested && "resume-points--nested"]}>
+  {
+    points.map((point) => (
+      <li>
+        {point.href ? (
+          <a href={point.href} rel="noreferrer">
+            {point.text}
+          </a>
+        ) : (
+          point.text
+        )}
+        {point.badge && <img class="resume-badge-img" src={point.badge} alt="" loading="lazy" />}
+        {point.children && point.children.length > 0 && (
+          <Astro.self points={point.children} nested />
+        )}
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  /* Filled disc at the top level, hollow circle beneath it: the two markers
+     make the nesting readable on their own, without indentation alone having
+     to carry it. */
+  .resume-points {
+    margin: 0.75rem 0 0;
+    padding-left: 1.1rem;
+    list-style-type: disc;
+    font-size: 0.9375rem;
+    line-height: 1.7;
+  }
+
+  .resume-points li {
+    margin-top: 0.35rem;
+  }
+
+  .resume-points a {
+    color: var(--accent);
+  }
+
+  /* Hollow bullets and a touch smaller, so the supporting detail reads as
+     subordinate to the point above it. */
+  .resume-points--nested {
+    margin-top: 0.25rem;
+    list-style-type: circle;
+    font-size: 0.9rem;
+  }
+
+  .resume-badge-img {
+    display: inline-block;
+    margin-left: 0.4rem;
+    height: 1.25rem;
+    vertical-align: text-bottom;
+  }
+</style>

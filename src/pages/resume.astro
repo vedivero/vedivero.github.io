@@ -1,0 +1,810 @@
+---
+import ResumeAside from "@/components/ResumeAside.astro";
+import ResumePoints from "@/components/ResumePoints.astro";
+import TechTag from "@/components/TechTag.astro";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import { resume } from "@/config/resume";
+import { formatDate } from "@/lib/posts";
+
+/* No SiteHeader or SiteFooter here, and no link back either: a résumé reads as
+   its own standalone document, so the page carries nothing but its own content.
+   Every other page keeps the site chrome. */
+
+/* Placeholders ship empty so the page renders cleanly before it is filled in:
+   drop anything with no content rather than printing a blank row. */
+const stats = resume.stats.filter((stat) => stat.value);
+const highlights = resume.highlights.filter((item) => item.title);
+const skills = resume.skills.filter((row) => row.items.length);
+
+/** "Latest Updated 2026. 03. 24 (D+161)" — days since the résumé last changed. */
+const updated = resume.updated ? new Date(resume.updated) : null;
+const daysSinceUpdate =
+  updated && !Number.isNaN(updated.valueOf())
+    ? Math.max(0, Math.floor((Date.now() - updated.valueOf()) / 86_400_000))
+    : null;
+
+/* Long lists collapse behind a "더보기" button. Splitting here keeps the
+   markup declarative — the script only toggles a hidden attribute. */
+const splitAt = (count: number, visible: number) =>
+  visible > 0 && count > visible ? visible : count;
+
+const companyCut = splitAt(resume.companies.length, resume.experienceVisible);
+const etcCut = splitAt(resume.etc.length, resume.etcVisible);
+
+/* The navigator lists only the sections that actually render, so it never
+   points at an anchor that is not on the page. */
+const sections = [
+  { id: "resume-introduce", label: "Introduce", show: resume.introduce.length > 0 },
+  { id: "resume-experience", label: "Experience", show: resume.companies.length > 0 },
+  { id: "resume-project", label: "Project", show: resume.projects.length > 0 },
+  { id: "resume-skill", label: "Skill", show: skills.length > 0 },
+  { id: "resume-open-source", label: "Open Source", show: resume.openSource.length > 0 },
+  { id: "resume-education", label: "Education", show: resume.education.length > 0 },
+  { id: "resume-etc", label: "Etc", show: resume.etc.length > 0 },
+].filter((section) => section.show);
+---
+
+<BaseLayout title="Resume" description={`${resume.name} — ${resume.tagline}`}>
+  <ResumeAside sections={sections} />
+  <main id="content" class="outer">
+    <div class="inner resume">
+      <header class="resume-head">
+        {
+          resume.photo && (
+            <img class="resume-photo" src={resume.photo} alt="" width="160" height="160" />
+          )
+        }
+
+        <div class="resume-identity">
+          <h1 class="resume-name">
+            {resume.name}
+            {resume.alias && <span class="resume-alias">({resume.alias})</span>}
+          </h1>
+          <p class="resume-tagline">{resume.tagline}</p>
+
+          <ul class="resume-links">
+            {
+              resume.links.map((link) => (
+                <li>
+                  <span class="resume-links__label">{link.label}</span>
+                  <a href={link.href} rel="noreferrer">
+                    {link.text ?? link.label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </header>
+
+      {resume.notice && <p class="resume-notice">{resume.notice}</p>}
+
+      {
+        stats.length > 0 && (
+          <ul class="resume-stats">
+            {stats.map((stat) => (
+              <li>
+                <p class="resume-stats__value">{stat.value}</p>
+                <p class="resume-stats__label">{stat.label}</p>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+
+      {
+        resume.introduce.length > 0 && (
+          <section class="resume-section" aria-labelledby="resume-introduce">
+            <h2 id="resume-introduce" class="resume-section__title">
+              Introduce
+            </h2>
+            <div class="resume-section__body">
+              <div class="resume-prose">
+                {resume.introduce.map((paragraph) => (
+                  <p>{paragraph}</p>
+                ))}
+              </div>
+
+              {(daysSinceUpdate !== null || resume.signature) && (
+                <div class="resume-meta">
+                  {daysSinceUpdate !== null && updated && (
+                    <p class="resume-updated">
+                      <span class="resume-updated__label">Latest Updated</span>
+                      <span class="resume-badge">
+                        {formatDate(updated, "short")} (D+{daysSinceUpdate})
+                      </span>
+                    </p>
+                  )}
+                  {resume.signature && <p class="resume-signature">{resume.signature}</p>}
+                </div>
+              )}
+            </div>
+          </section>
+        )
+      }
+
+      {
+        highlights.length > 0 && (
+          <ul class="resume-cards">
+            {highlights.map((item) => (
+              <li class="resume-card">
+                <h3 class="resume-card__title">{item.title}</h3>
+                <p class="resume-card__text">{item.description}</p>
+                {item.tags.length > 0 && (
+                  <ul class="resume-tags">
+                    {item.tags.map((tag) => (
+                      <li>{tag}</li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            ))}
+          </ul>
+        )
+      }
+
+      {
+        resume.companies.length > 0 && (
+          <section class="resume-section" aria-labelledby="resume-experience">
+            <h2 id="resume-experience" class="resume-section__title">
+              Experience
+            </h2>
+            <div class="resume-section__body">
+              {resume.experienceTotal && (
+                <div class="resume-row resume-total">
+                  <p class="resume-row__aside">Total</p>
+                  <p>
+                    <span class="resume-badge">{resume.experienceTotal}</span>
+                  </p>
+                </div>
+              )}
+
+              {resume.companies.map((company, index) => (
+                <article
+                  class="resume-company"
+                  hidden={index >= companyCut}
+                  data-resume-collapsible="experience"
+                >
+                  <div class="resume-row">
+                    <p class="resume-row__aside resume-row__aside--strong">{company.period}</p>
+                    <div>
+                      <h3 class="resume-company__name">
+                        <span class="resume-dot" aria-hidden="true" />
+                        {company.name}
+                        {company.current && (
+                          <span class="resume-badge resume-badge--current">재직 중</span>
+                        )}
+                        {company.duration && <span class="resume-badge">{company.duration}</span>}
+                      </h3>
+                    </div>
+                  </div>
+
+                  {company.roles.map((role) => (
+                    <div class="resume-row resume-role">
+                      <p class="resume-row__aside">{role.period}</p>
+                      <div>
+                        <p class="resume-role__title">{role.title}</p>
+                        <ResumePoints points={role.points} />
+                        {role.skills && role.skills.length > 0 && (
+                          <>
+                            <p class="resume-role__skills-label">Skill Keywords</p>
+                            <ul class="resume-tags">
+                              {role.skills.map((skill) => (
+                                <TechTag name={skill} />
+                              ))}
+                            </ul>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </article>
+              ))}
+
+              {companyCut < resume.companies.length && (
+                <button type="button" class="resume-more" data-resume-more="experience">
+                  더보기
+                </button>
+              )}
+            </div>
+          </section>
+        )
+      }
+
+      {
+        resume.projects.length > 0 && (
+          <section class="resume-section" aria-labelledby="resume-project">
+            <h2 id="resume-project" class="resume-section__title">
+              Project
+            </h2>
+            <div class="resume-section__body">
+              {resume.projects.map((project) => (
+                <div class="resume-row resume-entry resume-project">
+                  <p class="resume-row__aside">{project.period}</p>
+                  <div>
+                    <h3 class="resume-entry__title">
+                      {project.link ? (
+                        <a href={project.link} target="_blank" rel="noreferrer">
+                          {project.title}
+                        </a>
+                      ) : (
+                        project.title
+                      )}
+                    </h3>
+                    {project.summary && <p class="resume-entry__summary">{project.summary}</p>}
+
+                    <ResumePoints points={project.points} />
+                    {project.techStack && project.techStack.length > 0 && (
+                      <ul class="resume-tags">
+                        {project.techStack.map((tech) => (
+                          <TechTag name={tech} />
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )
+      }
+
+      {
+        skills.length > 0 && (
+          <section class="resume-section" aria-labelledby="resume-skill">
+            <h2 id="resume-skill" class="resume-section__title">
+              Skill
+            </h2>
+            <div class="resume-section__body">
+              {skills.map((row) => (
+                <div class="resume-row resume-skill">
+                  <p class="resume-row__aside resume-row__aside--strong">{row.group}</p>
+                  <ul class="resume-tags">
+                    {row.items.map((item) => (
+                      <TechTag name={item} />
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </section>
+        )
+      }
+
+      {
+        resume.openSource.length > 0 && (
+          <section class="resume-section" aria-labelledby="resume-open-source">
+            <h2 id="resume-open-source" class="resume-section__title">
+              Open Source
+            </h2>
+            <div class="resume-section__body">
+              {resume.openSource.map((project) => (
+                <div class="resume-row resume-entry">
+                  <p class="resume-row__aside resume-row__aside--strong">{project.name}</p>
+                  <div>
+                    <ResumePoints points={project.points} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )
+      }
+
+      {
+        resume.education.length > 0 && (
+          <section class="resume-section" aria-labelledby="resume-education">
+            <h2 id="resume-education" class="resume-section__title">
+              Education
+            </h2>
+            <div class="resume-section__body">
+              {resume.education.map((entry) => (
+                <div class="resume-row resume-entry">
+                  <p class="resume-row__aside">{entry.period}</p>
+                  <div>
+                    <h3 class="resume-entry__title">{entry.title}</h3>
+                    {entry.subtitle && <p class="resume-entry__subtitle">{entry.subtitle}</p>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )
+      }
+
+      {
+        resume.etc.length > 0 && (
+          <section class="resume-section" aria-labelledby="resume-etc">
+            <h2 id="resume-etc" class="resume-section__title">
+              Etc
+            </h2>
+            <div class="resume-section__body">
+              {resume.etc.map((entry, index) => (
+                <div
+                  class="resume-row resume-entry"
+                  hidden={index >= etcCut}
+                  data-resume-collapsible="etc"
+                >
+                  <p class="resume-row__aside">{entry.period}</p>
+                  <div>
+                    <h3 class="resume-entry__title">{entry.title}</h3>
+                    {entry.subtitle && <p class="resume-entry__subtitle">{entry.subtitle}</p>}
+                  </div>
+                </div>
+              ))}
+
+              {etcCut < resume.etc.length && (
+                <button type="button" class="resume-more" data-resume-more="etc">
+                  더보기
+                </button>
+              )}
+            </div>
+          </section>
+        )
+      }
+    </div>
+  </main>
+
+  <script>
+    /* Progressive enhancement: the hidden entries are in the HTML already, so
+       the list is complete without JS and for anything that ignores it. */
+    document.querySelectorAll<HTMLButtonElement>("[data-resume-more]").forEach((button) => {
+      const key = button.dataset.resumeMore;
+
+      button.addEventListener("click", () => {
+        document
+          .querySelectorAll<HTMLElement>(`[data-resume-collapsible="${key}"]`)
+          .forEach((item) => {
+            item.hidden = false;
+          });
+        button.remove();
+      });
+    });
+  </script>
+
+  <style>
+    .resume {
+      padding-block: 3rem 4rem;
+    }
+
+    /* ------------------------------------------------------------- header --- */
+
+    .resume-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 2.5rem;
+    }
+
+    .resume-photo {
+      width: 10rem;
+      height: 10rem;
+      border: 3px solid color-mix(in srgb, var(--accent) 40%, var(--border));
+      border-radius: var(--radius-full);
+      object-fit: cover;
+    }
+
+    .resume-identity {
+      flex: 1 1 20rem;
+      min-width: 0;
+    }
+
+    .resume-name {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+    }
+
+    .resume-alias {
+      margin-left: 0.4rem;
+      color: var(--muted-foreground);
+      font-size: 0.55em;
+      font-weight: 500;
+    }
+
+    .resume-tagline {
+      margin: 0.6rem 0 0;
+      color: var(--muted-foreground);
+      font-size: 1.0625rem;
+    }
+
+    .resume-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem 1.5rem;
+      margin: 1.25rem 0 0;
+      padding: 0;
+      list-style: none;
+      font-size: 0.9375rem;
+    }
+
+    .resume-links__label {
+      margin-right: 0.4rem;
+      color: var(--muted-foreground);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .resume-links a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .resume-links a:hover {
+      text-decoration: underline;
+    }
+
+    .resume-notice {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin: 2rem 0 0;
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius-sm);
+      background: var(--card);
+      padding: 1rem 1.2rem;
+      font-size: 0.9375rem;
+    }
+
+    /* Headline numbers. auto-fit keeps them on one row while there is space and
+       folds them to a column on narrow screens without a breakpoint. */
+    .resume-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0 0;
+      border-radius: var(--radius-md);
+      background: var(--muted);
+      padding: 2.5rem 1.5rem;
+      list-style: none;
+      text-align: center;
+    }
+
+    .resume-stats__value {
+      margin: 0;
+      color: var(--accent);
+      font-family: var(--font-display);
+      font-size: clamp(1.75rem, 4vw, 2.75rem);
+      font-weight: 600;
+      line-height: 1.1;
+    }
+
+    .resume-stats__label {
+      margin: 0.5rem 0 0;
+      color: var(--muted-foreground);
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    /* ------------------------------------------------------------ sections --- */
+
+    .resume-section {
+      margin-top: var(--space-section);
+    }
+
+    .resume-section__title {
+      /* Room above the heading when the navigator jumps to it. */
+      scroll-margin-top: 2rem;
+      margin: 0 0 2rem;
+      border-bottom: 1px solid var(--border-strong);
+      padding-bottom: 0.75rem;
+      color: var(--accent);
+      font-size: 0.8125rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .resume-prose p {
+      margin: 0 0 1.1rem;
+      font-size: 0.9375rem;
+      line-height: 1.8;
+    }
+
+    .resume-prose p:last-child {
+      margin-bottom: 0;
+    }
+
+    .resume-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 0.75rem 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .resume-updated {
+      margin: 0;
+      font-size: 0.875rem;
+    }
+
+    .resume-updated__label {
+      margin-right: 0.5rem;
+      color: var(--muted-foreground);
+    }
+
+    .resume-signature {
+      margin: 0;
+      color: var(--muted-foreground);
+      font-family: var(--font-serif);
+      font-size: 1.5rem;
+      font-style: italic;
+    }
+
+    /* The shared row: an aside column on the left, content on the right. */
+    .resume-row {
+      display: grid;
+      gap: 0.5rem 2rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .resume-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .resume-row__aside {
+      margin: 0;
+      color: var(--muted-foreground);
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .resume-row__aside--strong {
+      color: var(--foreground);
+      font-weight: 600;
+    }
+
+    .resume-total {
+      margin-bottom: 2rem;
+    }
+
+    .resume-total p {
+      margin: 0;
+    }
+
+    .resume-badge {
+      display: inline-block;
+      margin-left: 0.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-full);
+      background: var(--muted);
+      padding: 0.2rem 0.7rem;
+      color: var(--muted-foreground);
+      font-size: 0.75rem;
+      font-weight: 500;
+      vertical-align: middle;
+    }
+
+    .resume-total .resume-badge {
+      margin-left: 0;
+    }
+
+    .resume-badge--current {
+      border-color: color-mix(in srgb, var(--tip) 40%, var(--border));
+      background: color-mix(in srgb, var(--tip) 8%, transparent);
+      color: var(--tip);
+    }
+
+    .resume-company {
+      margin-bottom: 3.5rem;
+    }
+
+    .resume-company:last-of-type {
+      margin-bottom: 0;
+    }
+
+    .resume-company__name {
+      margin: 0;
+      font-size: 1.0625rem;
+      font-weight: 600;
+    }
+
+    .resume-dot {
+      display: inline-block;
+      width: 0.45rem;
+      height: 0.45rem;
+      margin-right: 0.5rem;
+      border-radius: 50%;
+      background: var(--accent);
+      vertical-align: middle;
+    }
+
+    .resume-role {
+      margin-bottom: 2.5rem;
+    }
+
+    .resume-role__title {
+      margin: 0;
+      color: var(--muted-foreground);
+      font-size: 0.9375rem;
+      font-style: italic;
+    }
+
+    .resume-role__skills-label {
+      margin: 1.25rem 0 0;
+      font-size: 0.9375rem;
+      font-weight: 600;
+    }
+
+    .resume-entry__title {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .resume-entry__title a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .resume-entry__title a:hover,
+    .resume-entry__title a:focus-visible {
+      color: var(--accent);
+      text-decoration: underline;
+      text-underline-offset: 0.2em;
+    }
+
+    .resume-entry__subtitle {
+      margin: 0.25rem 0 0;
+      color: var(--muted-foreground);
+      font-size: 0.9375rem;
+      font-style: italic;
+    }
+
+    /* Carries the one-line "what this was", so it stays upright and readable
+       rather than joining the metadata below it. */
+    .resume-entry__summary {
+      margin: 0.35rem 0 0;
+      color: var(--muted-foreground);
+      font-size: 0.9375rem;
+      line-height: 1.5;
+    }
+
+    /* Each project is a unit; a hairline keeps seven of them from running
+       together into one wall of text. The rule rides on the shared row margin
+       rather than adding its own, so the rhythm stays even. */
+    .resume-project + .resume-project {
+      border-top: 1px solid var(--border);
+      padding-top: 2.5rem;
+    }
+
+    /* Project titles run larger than the Education and Etc entries that share
+       the base class: they head a block of detail rather than labelling a line,
+       so they need to read as the entry point. */
+    .resume-project .resume-entry__title {
+      font-size: 1.3125rem;
+      letter-spacing: -0.01em;
+      line-height: 1.35;
+    }
+
+    /* Pills shared by skill rows and per-role keyword lists. */
+    .resume-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      /* Separates the pills from the bullets they follow in Experience and
+         Project. */
+      margin: 0.85rem 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    /* In Skill the pills open the row, so that top margin would push them below
+       their own label. Drop it, then nudge the label down by half the height a
+       pill gains from its padding and border, so the two read as one line. */
+    .resume-skill .resume-tags {
+      margin-top: 0;
+    }
+
+    .resume-skill .resume-row__aside {
+      padding-top: 0.225rem;
+    }
+
+    /* Only the highlight cards' plain label tags: TechTag styles its own pill. */
+    .resume-tags li:not(.tech-tag) {
+      border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border));
+      border-radius: var(--radius-full);
+      padding: 0.25rem 0.75rem;
+      color: var(--accent);
+      font-size: 0.8125rem;
+    }
+
+
+    .resume-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+      gap: 1.25rem;
+      margin: 2.5rem 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .resume-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--card);
+      padding: 1.5rem;
+    }
+
+    .resume-card__title {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .resume-card__text {
+      margin: 0.6rem 0 0;
+      color: var(--muted-foreground);
+      font-size: 0.9375rem;
+      line-height: 1.65;
+    }
+
+    .resume-more {
+      width: 100%;
+      margin-top: 2rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--card);
+      padding: 0.9rem 1rem;
+      color: var(--muted-foreground);
+      font: inherit;
+      font-size: 0.9375rem;
+      cursor: pointer;
+      transition:
+        border-color var(--duration) var(--ease-out),
+        color var(--duration) var(--ease-out);
+    }
+
+    .resume-more:hover,
+    .resume-more:focus-visible {
+      border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+      color: var(--accent);
+    }
+
+    /* Printing is a first-class way to read a résumé, so drop the screen-only
+       chrome and stop sections from breaking across pages. */
+    @media print {
+      .resume {
+        padding-block: 0;
+      }
+
+      .resume-more {
+        display: none;
+      }
+
+      /* The button is gone on paper, so reveal what it was hiding rather than
+         silently dropping those entries from the printed copy. */
+      [data-resume-collapsible][hidden] {
+        display: block !important;
+      }
+
+      .resume-section,
+      .resume-company,
+      .resume-row {
+        break-inside: avoid;
+      }
+
+      .resume-section {
+        margin-top: 2.5rem;
+      }
+    }
+
+    @media (min-width: 48rem) {
+      .resume-row {
+        grid-template-columns: 11rem minmax(0, 1fr);
+      }
+
+      .resume-row__aside {
+        text-align: right;
+      }
+    }
+  </style>
+</BaseLayout>
