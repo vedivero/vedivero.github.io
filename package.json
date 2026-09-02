@@ -37,6 +37,7 @@
     "@iconify-json/devicon": "^1.2.62",
     "@types/node": "^22.16.5",
     "prettier": "^3.9.6",
+    "prettier-plugin-astro": "^0.14.1",
     "simple-icons": "^16.29.0",
     "typescript": "^5.8.3",
     "vite": "^8.1.5"
