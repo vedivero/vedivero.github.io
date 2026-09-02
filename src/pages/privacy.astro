@@ -38,15 +38,21 @@ const allPosts = visiblePosts(await getCollection("posts"));
         <h2>Your reading preference</h2>
         <p>
           The light or dark reading mode you pick is stored in your browser's local storage under
-          <code>monograph-theme</code>. It never leaves your device and you can clear it at any time.
+          <code>monograph-theme</code>. It never leaves your device and you can clear it at any
+          time.
         </p>
 
         <h2>Contact</h2>
         {
           siteConfig.email ? (
-            <p>For privacy requests, email <a href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a>.</p>
+            <p>
+              For privacy requests, email{" "}
+              <a href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a>.
+            </p>
           ) : (
-            <p>Add a privacy contact address in <code>src/config/site.ts</code> before publishing.</p>
+            <p>
+              Add a privacy contact address in <code>src/config/site.ts</code> before publishing.
+            </p>
           )
         }
       </div>

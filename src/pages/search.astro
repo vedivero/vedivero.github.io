@@ -46,7 +46,8 @@ const searchItems = allPosts.map((post) => ({
           </div>
         </form>
 
-        <p class="search-page-summary mt-4 text-sm text-muted-foreground" data-search-page-summary></p>
+        <p class="search-page-summary mt-4 text-sm text-muted-foreground" data-search-page-summary>
+        </p>
       </header>
 
       <div class="feed" data-search-page-results></div>
@@ -54,7 +55,12 @@ const searchItems = allPosts.map((post) => ({
   </main>
   <SiteFooter />
 
-  <script is:inline type="application/json" id="search-page-data" set:html={JSON.stringify(searchItems)} />
+  <script
+    is:inline
+    type="application/json"
+    id="search-page-data"
+    set:html={JSON.stringify(searchItems)}
+  />
   <script is:inline>
     (() => {
       const input = document.querySelector("[data-search-page-input]");
@@ -65,13 +71,17 @@ const searchItems = allPosts.map((post) => ({
       if (!input || !results || !summary) return;
 
       const escapeHtml = (value) =>
-        String(value).replace(/[&<>"']/g, (character) => ({
-          "&": "&amp;",
-          "<": "&lt;",
-          ">": "&gt;",
-          '"': "&quot;",
-          "'": "&#39;",
-        })[character]);
+        String(value).replace(
+          /[&<>"']/g,
+          (character) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[character],
+        );
 
       const matches = (item, query) =>
         [item.title, item.excerpt, item.author, item.category]

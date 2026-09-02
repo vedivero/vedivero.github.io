@@ -46,14 +46,25 @@ const schema = structuredData ?? defaultStructuredData;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="preload" href="/fonts/geist/Geist-Variable.woff2" as="font" type="font/woff2" crossorigin />
+    <link
+      rel="preload"
+      href="/fonts/geist/Geist-Variable.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="canonical" href={canonical} />
     {prevUrl && <link rel="prev" href={new URL(prevUrl, siteConfig.siteUrl).toString()} />}
     {nextUrl && <link rel="next" href={new URL(nextUrl, siteConfig.siteUrl).toString()} />}
-    <link rel="alternate" type="application/rss+xml" title={`${siteConfig.name} RSS`} href={new URL("/rss.xml", siteConfig.siteUrl).toString()} />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={`${siteConfig.name} RSS`}
+      href={new URL("/rss.xml", siteConfig.siteUrl).toString()}
+    />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     <meta property="og:locale" content={siteConfig.locale} />
     <meta property="og:type" content={type} />
@@ -88,7 +99,10 @@ const schema = structuredData ?? defaultStructuredData;
           const isDark = theme === "dark";
           document.querySelectorAll("[data-theme-toggle]").forEach((button) => {
             button.setAttribute("aria-checked", String(isDark));
-            button.setAttribute("aria-label", isDark ? "Switch to light mode" : "Switch to dark mode");
+            button.setAttribute(
+              "aria-label",
+              isDark ? "Switch to light mode" : "Switch to dark mode",
+            );
           });
         };
 
@@ -139,8 +153,7 @@ const schema = structuredData ?? defaultStructuredData;
        * keep working.
        */
       (() => {
-        const EDITABLE =
-          "input, textarea, select, [contenteditable=''], [contenteditable='true']";
+        const EDITABLE = "input, textarea, select, [contenteditable=''], [contenteditable='true']";
 
         /* event.target is often a text node, which has no closest(); resolve it
            to its parent element first. Also treat whatever currently has focus
@@ -148,11 +161,7 @@ const schema = structuredData ?? defaultStructuredData;
            report that field as the target. */
         const isEditable = (node) => {
           const el =
-            node instanceof Element
-              ? node
-              : node instanceof Node
-                ? node.parentElement
-                : null;
+            node instanceof Element ? node : node instanceof Node ? node.parentElement : null;
 
           if (el?.closest(`${EDITABLE}, .code-copy-frame, pre, code`)) return true;
           return Boolean(document.activeElement?.closest(EDITABLE));

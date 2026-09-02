@@ -18,7 +18,8 @@ const authors = getAllAuthors(allPosts);
         <p class="eyebrow">Index</p>
         <h1 class="pagehead-title">Authors</h1>
         <p class="pagehead-description">
-          {authors.length} {authors.length === 1 ? "person writes" : "people write"} here.
+          {authors.length}
+          {authors.length === 1 ? "person writes" : "people write"} here.
         </p>
       </header>
 
@@ -26,9 +27,14 @@ const authors = getAllAuthors(allPosts);
         {
           authors.map((author) => (
             <li class="border-b border-border pb-5 last:border-b-0">
-              <a href={`/author/${author.slug}/`} class="link-title flex items-baseline justify-between gap-4">
+              <a
+                href={`/author/${author.slug}/`}
+                class="link-title flex items-baseline justify-between gap-4"
+              >
                 <span>
-                  <span class="link-title__text block text-xl font-semibold tracking-tight">{author.name}</span>
+                  <span class="link-title__text block text-xl font-semibold tracking-tight">
+                    {author.name}
+                  </span>
                   <span class="mt-1 block text-sm text-muted-foreground">{author.role}</span>
                 </span>
                 <span class="pill shrink-0">

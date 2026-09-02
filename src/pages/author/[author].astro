@@ -37,7 +37,8 @@ const posts = visiblePosts(allPosts).filter(
         <p class="eyebrow">Author</p>
         <h1 class="pagehead-title">{author.name}</h1>
         <p class="pagehead-description">
-          {author.role} &middot; {posts.length} {posts.length === 1 ? "post" : "posts"}
+          {author.role} &middot; {posts.length}
+          {posts.length === 1 ? "post" : "posts"}
         </p>
       </header>
 

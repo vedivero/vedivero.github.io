@@ -7,9 +7,7 @@
  * Order matters: it is the order used on the categories index and in the home
  * sidebar.
  */
-export const categories = [
-  "Java",
-] as const;
+export const categories = ["Java"] as const;
 
 export type Category = (typeof categories)[number];
 

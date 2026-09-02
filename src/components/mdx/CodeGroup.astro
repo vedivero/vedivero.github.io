@@ -113,7 +113,9 @@
     const panelsWrap = group.querySelector<HTMLElement>(":scope > .code-group-panels");
     if (!tabsWrap || !panelsWrap) return;
 
-    const panels = Array.from(panelsWrap.querySelectorAll<HTMLElement>(":scope > [data-code-tab-panel]"));
+    const panels = Array.from(
+      panelsWrap.querySelectorAll<HTMLElement>(":scope > [data-code-tab-panel]"),
+    );
     if (panels.length < 2) return;
 
     const tabs: HTMLButtonElement[] = panels.map((panel, index) => {
@@ -149,7 +151,8 @@
 
       let nextIndex: number | null = null;
       if (event.key === "ArrowRight") nextIndex = (currentIndex + 1) % tabs.length;
-      else if (event.key === "ArrowLeft") nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+      else if (event.key === "ArrowLeft")
+        nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
       else if (event.key === "Home") nextIndex = 0;
       else if (event.key === "End") nextIndex = tabs.length - 1;
 

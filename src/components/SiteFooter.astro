@@ -17,7 +17,9 @@ const currentYear = new Date().getFullYear();
 ---
 
 <footer class="outer mt-[var(--space-section)] border-t border-border">
-  <div class="inner grid gap-10 py-12 text-center md:grid-cols-3 md:items-center md:gap-8 md:text-left">
+  <div
+    class="inner grid gap-10 py-12 text-center md:grid-cols-3 md:items-center md:gap-8 md:text-left"
+  >
     <div>
       <a href="/" class="wordmark">{siteConfig.name}</a>
       <p class="mt-2 text-xs text-muted-foreground">&copy; {currentYear}. All rights reserved.</p>
@@ -47,7 +49,9 @@ const currentYear = new Date().getFullYear();
             footerNavigation.map((item, index) => (
               <li class="flex items-center gap-4">
                 {index > 0 && <span class="footer-dot" aria-hidden="true" />}
-                <a href={item.href} class="nav-link">{item.label}</a>
+                <a href={item.href} class="nav-link">
+                  {item.label}
+                </a>
               </li>
             ))
           }
@@ -56,7 +60,13 @@ const currentYear = new Date().getFullYear();
     </div>
 
     <p class="flex justify-center md:justify-end">
-      <a href="https://github.com/vedivero" target="_blank" rel="noreferrer" class="social-btn" aria-label={`${siteConfig.name} on GitHub`}>
+      <a
+        href="https://github.com/vedivero"
+        target="_blank"
+        rel="noreferrer"
+        class="social-btn"
+        aria-label={`${siteConfig.name} on GitHub`}
+      >
         <LocalIcon name="github" className="h-8 w-8" />
       </a>
     </p>

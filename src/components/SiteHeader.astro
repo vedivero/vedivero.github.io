@@ -51,8 +51,9 @@ const isCurrentPath = (href: string) =>
           data-search-toggle
         >
           <svg aria-hidden="true" class="h-[1.05rem] w-[1.05rem]" viewBox="0 0 24 24" fill="none">
-            <circle cx="11" cy="11" r="6.5" stroke="currentColor" stroke-width="1.75" />
-            <path d="m16 16 4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" />
+            <circle cx="11" cy="11" r="6.5" stroke="currentColor" stroke-width="1.75"></circle>
+            <path d="m16 16 4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"
+            ></path>
           </svg>
         </a>
 
@@ -66,11 +67,19 @@ const isCurrentPath = (href: string) =>
         >
           <span class="theme-switch__knob" aria-hidden="true">
             <svg class="theme-icon-sun" viewBox="0 0 24 24" fill="none">
-              <path d="M12 4V2M12 22v-2M4 12H2M22 12h-2M5 5 3.5 3.5M20.5 20.5 19 19M19 5l1.5-1.5M3.5 20.5 5 19" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" />
-              <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2.25" />
+              <path
+                d="M12 4V2M12 22v-2M4 12H2M22 12h-2M5 5 3.5 3.5M20.5 20.5 19 19M19 5l1.5-1.5M3.5 20.5 5 19"
+                stroke="currentColor"
+                stroke-width="2.25"
+                stroke-linecap="round"></path>
+              <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="2.25"></circle>
             </svg>
             <svg class="theme-icon-moon" viewBox="0 0 24 24" fill="none">
-              <path d="M20 14.2A7.4 7.4 0 0 1 9.8 4a8.6 8.6 0 1 0 10.2 10.2Z" stroke="currentColor" stroke-width="2.25" stroke-linejoin="round" />
+              <path
+                d="M20 14.2A7.4 7.4 0 0 1 9.8 4a8.6 8.6 0 1 0 10.2 10.2Z"
+                stroke="currentColor"
+                stroke-width="2.25"
+                stroke-linejoin="round"></path>
             </svg>
           </span>
         </button>
@@ -83,7 +92,11 @@ const isCurrentPath = (href: string) =>
           data-mobile-menu-toggle
         >
           <svg aria-hidden="true" class="h-5 w-5" viewBox="0 0 24 24" fill="none">
-            <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" />
+            <path
+              d="M4 7h16M4 12h16M4 17h16"
+              stroke="currentColor"
+              stroke-width="1.75"
+              stroke-linecap="round"></path>
           </svg>
           <span class="sr-only">Open navigation menu</span>
         </button>
@@ -103,8 +116,9 @@ const isCurrentPath = (href: string) =>
     <form action="/search/" method="get" role="search" aria-label="Site search">
       <div class="search-field">
         <svg aria-hidden="true" class="search-field-icon" viewBox="0 0 24 24" fill="none">
-          <circle cx="11" cy="11" r="6.5" stroke="currentColor" stroke-width="1.75" />
-          <path d="m16 16 4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" />
+          <circle cx="11" cy="11" r="6.5" stroke="currentColor" stroke-width="1.75"></circle>
+          <path d="m16 16 4 4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"
+          ></path>
         </svg>
         <h2 id="site-search-title" class="sr-only">Search {siteConfig.name}</h2>
         <label class="sr-only" for="site-search-input">Search posts</label>
@@ -120,7 +134,11 @@ const isCurrentPath = (href: string) =>
         />
         <button type="button" class="icon-btn shrink-0" aria-label="Close search" data-search-close>
           <svg aria-hidden="true" class="h-[1.1rem] w-[1.1rem]" viewBox="0 0 24 24" fill="none">
-            <path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" />
+            <path
+              d="m6 6 12 12M18 6 6 18"
+              stroke="currentColor"
+              stroke-width="1.75"
+              stroke-linecap="round"></path>
           </svg>
         </button>
       </div>
@@ -128,7 +146,13 @@ const isCurrentPath = (href: string) =>
       <div class="search-body">
         <div class="search-body-head">
           <p class="eyebrow" data-search-heading></p>
-          <p id="site-search-summary" class="text-xs text-muted-foreground" data-search-summary aria-live="polite"></p>
+          <p
+            id="site-search-summary"
+            class="text-xs text-muted-foreground"
+            data-search-summary
+            aria-live="polite"
+          >
+          </p>
         </div>
         <div class="search-results" data-search-results></div>
       </div>
@@ -153,9 +177,18 @@ const isCurrentPath = (href: string) =>
 >
   <div class="flex items-center justify-between gap-6 border-b border-border px-6 py-4">
     <a href="/" class="wordmark">{siteConfig.name}</a>
-    <button type="button" class="icon-btn" data-mobile-menu-close aria-label="Close navigation menu">
+    <button
+      type="button"
+      class="icon-btn"
+      data-mobile-menu-close
+      aria-label="Close navigation menu"
+    >
       <svg aria-hidden="true" class="h-5 w-5" viewBox="0 0 24 24" fill="none">
-        <path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" />
+        <path
+          d="m6 6 12 12M18 6 6 18"
+          stroke="currentColor"
+          stroke-width="1.75"
+          stroke-linecap="round"></path>
       </svg>
     </button>
   </div>
@@ -179,7 +212,12 @@ const isCurrentPath = (href: string) =>
   </nav>
 </div>
 
-<script is:inline type="application/json" id="site-search-fallback" set:html={JSON.stringify(searchFallback)} />
+<script
+  is:inline
+  type="application/json"
+  id="site-search-fallback"
+  set:html={JSON.stringify(searchFallback)}
+/>
 
 <script is:inline>
   (() => {
@@ -192,7 +230,9 @@ const isCurrentPath = (href: string) =>
     const heading = dialog?.querySelector("[data-search-heading]");
     const summary = dialog?.querySelector("[data-search-summary]");
     const panel = dialog?.querySelector("[data-search-panel]");
-    const fallback = JSON.parse(document.getElementById("site-search-fallback")?.textContent || "[]");
+    const fallback = JSON.parse(
+      document.getElementById("site-search-fallback")?.textContent || "[]",
+    );
     let index = [];
     let indexPromise;
 
@@ -223,13 +263,17 @@ const isCurrentPath = (href: string) =>
     };
 
     const escapeHtml = (value) =>
-      String(value).replace(/[&<>"']/g, (character) => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#39;",
-      })[character]);
+      String(value).replace(
+        /[&<>"']/g,
+        (character) =>
+          ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;",
+          })[character],
+      );
 
     /* Lower is better: an exact title prefix beats a title match, which beats a
        category match, which beats a hit in the excerpt or author name. */

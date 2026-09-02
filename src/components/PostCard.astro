@@ -39,11 +39,15 @@ const readableDate = formatDate(date);
     <p class="card-excerpt">{excerpt}</p>
 
     <p class="meta card-footer">
-      {variant === "lead" ? (
-        <span>{author.name}</span>
-      ) : (
-        <time class="meta-accent" datetime={isoDate}>{readableDate}</time>
-      )}
+      {
+        variant === "lead" ? (
+          <span>{author.name}</span>
+        ) : (
+          <time class="meta-accent" datetime={isoDate}>
+            {readableDate}
+          </time>
+        )
+      }
       {variant !== "compact" && <span>{readingLabel(post)}</span>}
     </p>
   </a>

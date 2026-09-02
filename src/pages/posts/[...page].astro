@@ -21,7 +21,8 @@ const { page } = Astro.props;
 const allPosts = visiblePosts(await getCollection("posts"));
 const title = page.currentPage === 1 ? "Archive" : `Archive - Page ${page.currentPage}`;
 const description = `Every post published on ${siteConfig.name}.`;
-const withTrailingSlash = (url: string | undefined) => (url && !url.endsWith("/") ? `${url}/` : url);
+const withTrailingSlash = (url: string | undefined) =>
+  url && !url.endsWith("/") ? `${url}/` : url;
 const prevUrl = withTrailingSlash(page.url.prev);
 const nextUrl = withTrailingSlash(page.url.next);
 ---
@@ -34,7 +35,10 @@ const nextUrl = withTrailingSlash(page.url.next);
         <p class="eyebrow">Archive</p>
         <h1 class="pagehead-title">All posts</h1>
         <p class="pagehead-description">
-          {page.total} {page.total === 1 ? "post" : "posts"}, newest first. Page {page.currentPage} of {page.lastPage}.
+          {page.total}
+          {page.total === 1 ? "post" : "posts"}, newest first. Page {page.currentPage} of {
+            page.lastPage
+          }.
         </p>
       </header>
 
@@ -42,7 +46,10 @@ const nextUrl = withTrailingSlash(page.url.next);
         {page.data.map((post) => <PostCard post={post} />)}
       </div>
 
-      <nav class="mt-16 flex items-center justify-between gap-4 border-t border-border pt-6" aria-label="Archive pagination">
+      <nav
+        class="mt-16 flex items-center justify-between gap-4 border-t border-border pt-6"
+        aria-label="Archive pagination"
+      >
         {
           prevUrl ? (
             <a href={prevUrl} class="nav-link link-nudge">

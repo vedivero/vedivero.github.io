@@ -33,7 +33,10 @@ const icon = icons[name];
 ---
 
 <span
-  class:list={["inline-grid place-items-center [&>svg]:h-full [&>svg]:w-full [&>svg]:fill-current", className]}
+  class:list={[
+    "inline-grid place-items-center [&>svg]:h-full [&>svg]:w-full [&>svg]:fill-current",
+    className,
+  ]}
   aria-hidden="true"
   set:html={icon}
 />

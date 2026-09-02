@@ -81,80 +81,103 @@ const structuredData = {
           <span class="post-meta__dates">
             <time datetime={data.date.toISOString()}>{formatDate(data.date, "long")}</time>
             <span>{readingLabel(post)}</span>
-            {data.updatedDate && (
-              <span>
-                Updated <time datetime={data.updatedDate.toISOString()}>{formatDate(data.updatedDate)}</time>
-              </span>
-            )}
+            {
+              data.updatedDate && (
+                <span>
+                  Updated{" "}
+                  <time datetime={data.updatedDate.toISOString()}>
+                    {formatDate(data.updatedDate)}
+                  </time>
+                </span>
+              )
+            }
           </span>
         </p>
       </header>
 
-      {data.cover && (
-        <figure class="article-image inner">
-          <Image
-            src={data.cover.src}
-            alt={data.cover.alt}
-            widths={[640, 960, 1200, 1600, 2000]}
-            sizes="(min-width: 1200px) 1200px, 100vw"
-            loading="eager"
-            decoding="async"
-            class="w-full"
-          />
-          {data.cover.creditName && (
-            <figcaption>
-              {data.cover.creditUrl ? (
-                <a href={data.cover.creditUrl} rel="noreferrer" class="underline underline-offset-2">
-                  {data.cover.creditName}
-                </a>
-              ) : (
-                data.cover.creditName
-              )}
-            </figcaption>
-          )}
-        </figure>
-      )}
+      {
+        data.cover && (
+          <figure class="article-image inner">
+            <Image
+              src={data.cover.src}
+              alt={data.cover.alt}
+              widths={[640, 960, 1200, 1600, 2000]}
+              sizes="(min-width: 1200px) 1200px, 100vw"
+              loading="eager"
+              decoding="async"
+              class="w-full"
+            />
+            {data.cover.creditName && (
+              <figcaption>
+                {data.cover.creditUrl ? (
+                  <a
+                    href={data.cover.creditUrl}
+                    rel="noreferrer"
+                    class="underline underline-offset-2"
+                  >
+                    {data.cover.creditName}
+                  </a>
+                ) : (
+                  data.cover.creditName
+                )}
+              </figcaption>
+            )}
+          </figure>
+        )
+      }
 
       <div class="prose inner mt-12">
         <Content components={mdxComponents} />
       </div>
 
-      {(newer || older) && (
-        <footer class="inner mt-16 border-t border-border pt-8">
-          <nav class="grid gap-8 sm:grid-cols-2" aria-label="Post navigation">
-            <div>
-              {older && (
-                <a href={postHref(older)} class="link-title link-nudge">
-                  <span class="eyebrow">
-                    <span class="link-nudge__arrow link-nudge__arrow--prev">&larr;</span> Previous
-                  </span>
-                  <span class="link-title__text mt-2 block font-semibold leading-snug">{older.data.title}</span>
-                </a>
-              )}
-            </div>
-            <div class="sm:text-right">
-              {newer && (
-                <a href={postHref(newer)} class="link-title link-nudge">
-                  <span class="eyebrow">
-                    Next <span class="link-nudge__arrow link-nudge__arrow--next">&rarr;</span>
-                  </span>
-                  <span class="link-title__text mt-2 block font-semibold leading-snug">{newer.data.title}</span>
-                </a>
-              )}
-            </div>
-          </nav>
-        </footer>
-      )}
+      {
+        (newer || older) && (
+          <footer class="inner mt-16 border-t border-border pt-8">
+            <nav class="grid gap-8 sm:grid-cols-2" aria-label="Post navigation">
+              <div>
+                {older && (
+                  <a href={postHref(older)} class="link-title link-nudge">
+                    <span class="eyebrow">
+                      <span class="link-nudge__arrow link-nudge__arrow--prev">&larr;</span> Previous
+                    </span>
+                    <span class="link-title__text mt-2 block font-semibold leading-snug">
+                      {older.data.title}
+                    </span>
+                  </a>
+                )}
+              </div>
+              <div class="sm:text-right">
+                {newer && (
+                  <a href={postHref(newer)} class="link-title link-nudge">
+                    <span class="eyebrow">
+                      Next <span class="link-nudge__arrow link-nudge__arrow--next">&rarr;</span>
+                    </span>
+                    <span class="link-title__text mt-2 block font-semibold leading-snug">
+                      {newer.data.title}
+                    </span>
+                  </a>
+                )}
+              </div>
+            </nav>
+          </footer>
+        )
+      }
     </article>
 
-    {related.length > 0 && (
-      <section class="inner mt-[var(--space-section)]" aria-labelledby="keep-reading">
-        <h2 id="keep-reading" class="section-title">Keep reading</h2>
-        <div class="grid gap-7">
-          {related.map((item) => <PostCard post={item} variant="compact" headingLevel="h3" />)}
-        </div>
-      </section>
-    )}
+    {
+      related.length > 0 && (
+        <section class="inner mt-[var(--space-section)]" aria-labelledby="keep-reading">
+          <h2 id="keep-reading" class="section-title">
+            Keep reading
+          </h2>
+          <div class="grid gap-7">
+            {related.map((item) => (
+              <PostCard post={item} variant="compact" headingLevel="h3" />
+            ))}
+          </div>
+        </section>
+      )
+    }
   </main>
   <SiteFooter />
 

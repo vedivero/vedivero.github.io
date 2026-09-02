@@ -36,7 +36,10 @@ const posts = getPostsByCategory(allPosts, category);
 const description = categoryDescriptions[category];
 ---
 
-<BaseLayout title={category} description={`${description} ${siteConfig.name} posts in ${category}.`}>
+<BaseLayout
+  title={category}
+  description={`${description} ${siteConfig.name} posts in ${category}.`}
+>
   <SiteHeader posts={allPosts} />
   <main id="content" class="outer">
     <div class="canvas">

@@ -43,7 +43,8 @@ const authors = getAllAuthors(allPosts);
           {
             authors.map((author) => (
               <li>
-                <a href={`/author/${authorSlug(author.name)}/`}>{author.name}</a> — {author.role} ({author.posts.length} {author.posts.length === 1 ? "post" : "posts"})
+                <a href={`/author/${authorSlug(author.name)}/`}>{author.name}</a> — {author.role} (
+                {author.posts.length} {author.posts.length === 1 ? "post" : "posts"})
               </li>
             ))
           }
@@ -51,11 +52,16 @@ const authors = getAllAuthors(allPosts);
 
         <h2>Get in touch</h2>
         <p>
-          Questions, corrections, and requests are welcome through the <a href="/contact/">contact page</a>.
+          Questions, corrections, and requests are welcome through the <a href="/contact/"
+            >contact page</a
+          >.
         </p>
         {
           siteConfig.email && (
-            <p>You can also email <a href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a> directly.</p>
+            <p>
+              You can also email <a href={`mailto:${siteConfig.email}`}>{siteConfig.email}</a>{" "}
+              directly.
+            </p>
           )
         }
       </div>

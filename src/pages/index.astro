@@ -20,53 +20,75 @@ const hasMore = allPosts.length > feed.length;
     <div class="inner">
       <h1 class="sr-only">{siteConfig.name} — {siteConfig.tagline}</h1>
 
-      <div class="grid gap-[var(--space-section)] pt-10 md:pt-14 lg:grid-cols-[minmax(0,4fr)_minmax(0,2fr)] lg:gap-12">
+      <div
+        class="grid gap-[var(--space-section)] pt-10 md:pt-14 lg:grid-cols-[minmax(0,4fr)_minmax(0,2fr)] lg:gap-12"
+      >
         <section aria-labelledby="more-posts">
           <h2 id="more-posts" class="section-title">Posts</h2>
 
-          {feed.length > 0 ? (
-            <div class="feed">
-              {feed.map((post) => <PostCard post={post} />)}
-            </div>
-          ) : (
-            <p class="text-muted-foreground">More posts are coming soon.</p>
-          )}
+          {
+            feed.length > 0 ? (
+              <div class="feed">
+                {feed.map((post) => (
+                  <PostCard post={post} />
+                ))}
+              </div>
+            ) : (
+              <p class="text-muted-foreground">More posts are coming soon.</p>
+            )
+          }
 
-          {hasMore && (
-            <a href="/posts/" class="btn btn-outline btn-block mt-16">Browse the archive</a>
-          )}
+          {
+            hasMore && (
+              <a href="/posts/" class="btn btn-outline btn-block mt-16">
+                Browse the archive
+              </a>
+            )
+          }
         </section>
 
         <aside class="sidebar">
+          {
+            categoryList.length > 0 && (
+              <section aria-labelledby="categories-heading">
+                <h2 id="categories-heading" class="section-title">
+                  Categories
+                </h2>
+                <ul class="grid gap-4">
+                  {categoryList.map((category) => (
+                    <li>
+                      <a
+                        href={categoryHref(category.name)}
+                        class="link-title flex items-center justify-between gap-3"
+                      >
+                        <span class="link-title__text text-base font-semibold tracking-tight">
+                          {category.name}
+                        </span>
+                        <span class="pill shrink-0">
+                          {category.count} {category.count === 1 ? "post" : "posts"}
+                        </span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )
+          }
 
-          {categoryList.length > 0 && (
-            <section aria-labelledby="categories-heading">
-              <h2 id="categories-heading" class="section-title">Categories</h2>
-              <ul class="grid gap-4">
-                {categoryList.map((category) => (
-                  <li>
-                    <a href={categoryHref(category.name)} class="link-title flex items-center justify-between gap-3">
-                      <span class="link-title__text text-base font-semibold tracking-tight">{category.name}</span>
-                      <span class="pill shrink-0">
-                        {category.count} {category.count === 1 ? "post" : "posts"}
-                      </span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
-
-          {featured.length > 0 && (
-            <section aria-labelledby="featured-heading">
-              <h2 id="featured-heading" class="section-title">Featured</h2>
-              <div class="grid gap-7">
-                {featured.map((post) => <PostCard post={post} variant="compact" headingLevel="h3" />)}
-              </div>
-            </section>
-          )}
-
-
+          {
+            featured.length > 0 && (
+              <section aria-labelledby="featured-heading">
+                <h2 id="featured-heading" class="section-title">
+                  Featured
+                </h2>
+                <div class="grid gap-7">
+                  {featured.map((post) => (
+                    <PostCard post={post} variant="compact" headingLevel="h3" />
+                  ))}
+                </div>
+              </section>
+            )
+          }
         </aside>
       </div>
     </div>

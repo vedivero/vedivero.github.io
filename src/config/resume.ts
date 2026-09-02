@@ -136,8 +136,6 @@ export const resume = {
     //     "임베딩 모델을 사내 GPU 서버에 서빙하고, 부품 데이터를 색인해 자연어로 검색하는 파이프라인을 설계·구현",
     //   tags: ["Milvus", "BGE-M3", "FastAPI"],
     // },
-
-
   ] as ResumeHighlight[],
 
   /** Total across every company, e.g. "총 5년 3개월". Blank hides it. */

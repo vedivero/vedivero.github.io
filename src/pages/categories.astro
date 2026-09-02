@@ -33,7 +33,9 @@ const categoryList = getCategoryList(allPosts);
             <li class="border-b border-border pb-7 last:border-b-0">
               <a href={categoryHref(category.name)} class="link-title">
                 <span class="flex items-baseline justify-between gap-4">
-                  <span class="link-title__text text-xl font-semibold tracking-tight">{category.name}</span>
+                  <span class="link-title__text text-xl font-semibold tracking-tight">
+                    {category.name}
+                  </span>
                   <span class="pill shrink-0">
                     {category.count} {category.count === 1 ? "post" : "posts"}
                   </span>
