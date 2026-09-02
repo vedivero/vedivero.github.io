@@ -25,6 +25,7 @@ const { name } = Astro.props;
 
 /** Tag name to its devicon key, for marks simple-icons does not carry. */
 const DEVICONS: Record<string, string> = {
+  Azure: "azure",
   Java: "java",
   Oracle: "oracle",
 };
@@ -41,6 +42,8 @@ const ICONS: Record<string, string> = {
   FastAPI: "siFastapi",
   Firebase: "siFirebase",
   Git: "siGit",
+  Jenkins: "siJenkins",
+  Kubernetes: "siKubernetes",
   GitHub: "siGithub",
   HTML: "siHtml5",
   JavaScript: "siJavascript",
@@ -49,7 +52,11 @@ const ICONS: Record<string, string> = {
   MongoDB: "siMongodb",
   MySQL: "siMysql",
   NestJS: "siNestjs",
+  // Both spellings appear in the wild; map them so a tag never loses its logo
+  // just because it was written with the dot.
+  "Nest.js": "siNestjs",
   Netlify: "siNetlify",
+  "Next.js": "siNextdotjs",
   "Node.js": "siNodedotjs",
   Notion: "siNotion",
   OpenLayers: "siOpenlayers",
@@ -57,6 +64,7 @@ const ICONS: Record<string, string> = {
   Python: "siPython",
   QGIS: "siQgis",
   React: "siReact",
+  "Rocky Linux": "siRockylinux",
   SVN: "siSubversion",
   Spring: "siSpring",
   "Spring Boot": "siSpringboot",
@@ -69,6 +77,7 @@ const ICONS: Record<string, string> = {
 const CATEGORY_COLORS: Record<string, string> = {
   // No mark in either set; brand colour keeps them distinguishable.
   "AWS EC2": "#FF9900",
+  OCI: "#C74634",
   Slack: "#4A154B",
   // GIS
   GeoServer: "#5A9E4B",
