@@ -153,7 +153,7 @@ export const resume = {
       roles: [
         {
           period: "",
-          title: "개발팀 선임연구원 / 웹 개발",
+          title: "선임연구원 / 개발팀",
           points: [
             { text: "사우디아라비아, Cesium기반 3D 디지털 트윈 플랫폼 개발" },
             { text: "LG전자, AI기반 3D 매뉴얼 프로젝트 개발" },
@@ -168,11 +168,12 @@ export const resume = {
       roles: [
         {
           period: "",
-          title: "개발팀 대리 / 웹 개발",
+          title: "대리 / 개발팀",
           points: [
-            { text: "공공 공간정보 플랫폼의 백엔드 API 설계·구현 및 지도 서비스 성능 개선" },
-            { text: "재난·소방 시스템의 위치 기반 자원 조회와 시스템 간 데이터 연계 개발" },
-            { text: "레거시 결제 모듈(PG) 전환 및 결제 데이터 구조 정비" },
+            { text: "공공데이터 포털 연계 및 REST API 구축" },
+            { text: "OpenLayers 기반 2D 지도 시스템 개발" },
+            { text: "공간데이터 연산 및 활용" },
+            { text: "레거시 결제 모듈(XPay → Toss Payments) 무중단 전환" },
           ],
         },
       ],
