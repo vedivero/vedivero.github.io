@@ -243,7 +243,7 @@ export const resume = {
       title: "울산 신불산 야영장 결제 모듈 교체",
       summary: "레거시 PG 전환(XPay → Toss Payments)",
       link: "https://camping.ulju.ulsan.kr/",
-      techStack: ["Spring", "전자정부 표준프레임워크", "MyBatis", "MySQL", "JEUS", "SVN"],
+      techStack: ["Spring", "MyBatis", "MySQL", "JEUS", "SVN"],
       points: [
         {
           text: "기존 XPay 결제 시스템을 Toss Payments로 교체",
@@ -258,7 +258,6 @@ export const resume = {
       link: "https://gis.gyeongnam.go.kr/um/publicProperty.do",
       techStack: [
         "Spring",
-        "전자정부 표준프레임워크",
         "MyBatis",
         "PostgreSQL",
         "PostGIS",
@@ -283,7 +282,6 @@ export const resume = {
       link: "https://gis.gyeongnam.go.kr/gnur/main.do",
       techStack: [
         "Spring",
-        "전자정부 표준프레임워크",
         "MyBatis",
         "PostgreSQL",
         "GeoServer",
@@ -303,7 +301,6 @@ export const resume = {
       summary: "위치 기반 신고자 조회 및 실시간 알림 발송 개발",
       techStack: [
         "Spring",
-        "전자정부 표준프레임워크",
         "iBatis",
         "Oracle",
         "OpenLayers",
@@ -320,7 +317,7 @@ export const resume = {
       period: "",
       title: "신고접수 — 소방민원정보시스템 연계 구축",
       summary: "시스템 간 데이터 연계 API 개발",
-      techStack: ["Spring", "전자정부 표준프레임워크", "iBatis", "Oracle", "CentOS", "SVN"],
+      techStack: ["Spring", "iBatis", "Oracle", "CentOS", "SVN"],
       points: [
         { text: "소방민원 정보 조회 및 신고접수 시스템 간 연계 개발" },
         { text: "연계 데이터베이스 설계 및 구축" },
@@ -333,7 +330,7 @@ export const resume = {
     { group: "Languages", items: ["Java", "TypeScript", "Python"] },
     {
       group: "Frameworks & Libraries",
-      items: ["Spring Boot", "전자정부 표준프레임워크", "Nest.js", "Next.js", "FastAPI"],
+      items: ["Spring Boot", "Nest.js", "Next.js", "FastAPI"],
     },
     {
       group: "Databases",
