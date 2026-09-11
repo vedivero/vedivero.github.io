@@ -222,7 +222,7 @@ export const resume = {
         "Spring Boot",
         "Spring Security",
         "PostgreSQL",
-        "JavaScript",
+        "React",
         "Cesium",
         "Docker",
         "Kubernetes",
