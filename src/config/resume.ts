@@ -108,9 +108,9 @@ export const resume = {
 
   /** Free-form paragraphs. */
   introduce: [
-    "4년 2개월의 웹 개발 경력을 바탕으로, TypeScript, Java, NestJS, Next.js, Spring Boot 등 다양한 백엔드 및 프론트엔드 프레임워크에서 실무 경험을 쌓았습니다.",
-    "REST API와 TypeORM, PostgreSQL, MySQL, MongoDB 등 여러 DBMS 환경에서 데이터 모델링과 최적화 작업을 수행해왔습니다.",
-    "더 깊은 경험을 가진 분들에게 배우며 시야를 넓히고 싶습니다. 아직 모르는 것이 많다는 사실이 이 일을 계속하게 만드는 이유이기도 합니다.",
+    "GIS 기반 공간정보 시스템부터 3D 디지털 트윈, AI 에이전트 연동 서비스까지, 4년 4개월간 프론트엔드와 백엔드를 넘나들며 직접 설계하고 구현해왔습니다.",
+    "Three.js·Cesium 기반 3D 렌더링, Spring Boot·NestJS 기반 REST API, PostgreSQL·PostGIS·Milvus를 활용한 데이터·검색 설계까지, 요구사항 분석부터 배포·운영까지 전 과정을 책임지며 LG전자·사우디 정부와 같은 실제 고객사의 문제를 기술로 풀어왔습니다.",
+    "정해진 답이 없는 문제일수록 더 몰입합니다. 검증되지 않은 기술이라도 직접 부딪혀 프로덕션 수준으로 완성해내는 것에 자신이 있고, 그 과정을 더 뛰어난 동료들과 함께하며 다음 단계로 성장하고 싶습니다.",
   ],
 
   /** Highlight cards under the introduction. */
